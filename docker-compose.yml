@@ -7,4 +7,10 @@ services:
     ports:
       - 80:80
 
+  php:
+    image: php:7.4-fpm
+    working_dir: /var/www/php
+    volumes:
+      - ./src:/var/www/php
+
 # vim: ts=2 sw=2 et
