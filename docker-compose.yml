@@ -27,5 +27,10 @@ services:
       MYSQL_DATABASE: test # Create a db called 'test' on container start
     volumes:
       - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - mysql-data:/var/lib/mysql
+
+volumes:
+
+  mysql-data:
 
 # vim: ts=2 sw=2 et
