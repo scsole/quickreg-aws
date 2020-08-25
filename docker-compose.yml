@@ -1,0 +1,5 @@
+version: '3.8'
+
+services:
+
+# vim: ts=2 sw=2 et
