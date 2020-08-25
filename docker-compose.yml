@@ -7,8 +7,10 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./src:/var/www/php
-      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./src:/var/www/php:ro
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - php
 
   php:
     image: php:7.4-fpm
