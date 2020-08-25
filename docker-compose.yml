@@ -13,7 +13,7 @@ services:
       - php
 
   php:
-    image: php:7.4-fpm
+    build: ./.docker/php
     working_dir: /var/www/php
     volumes:
       - ./src:/var/www/php
