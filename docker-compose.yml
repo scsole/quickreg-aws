@@ -6,6 +6,9 @@ services:
     image: nginx:1.19
     ports:
       - 80:80
+    volumes:
+      - ./src:/var/www/php
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
 
   php:
     image: php:7.4-fpm
