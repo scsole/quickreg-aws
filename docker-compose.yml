@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    image: nginx:1.19
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/php:ro
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - php
+
+  php:
+    build: ./.docker/php
+    working_dir: /var/www/php
+    volumes:
+      - ./src:/var/www/php
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test # Create a db called 'test' on container start
+    volumes:
+      - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - mysql-data:/var/lib/mysql
+
+volumes:
+
+  mysql-data:
+
+# vim: ts=2 sw=2 et
