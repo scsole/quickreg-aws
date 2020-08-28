@@ -32,6 +32,7 @@ services:
       MYSQL_DATABASE: quickreg
     volumes:
       - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ./.docker/mysql/db-setup.sql:/docker-entrypoint-initdb.d/db-setup.sql:ro
       - mysql-data:/var/lib/mysql
 
   phpmyadmin:
