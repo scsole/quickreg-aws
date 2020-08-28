@@ -26,13 +26,14 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test # Create a db called 'test' on container start
+      MYSQL_ROOT_PASSWORD: insecure_root_pw
+      MYSQL_USER: webuser
+      MYSQL_PASSWORD: insecure_pw
+      MYSQL_DATABASE: quickreg
     volumes:
       - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - mysql-data:/var/lib/mysql
-        
-  # PhpMyAdmin Service
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5-fpm-alpine
     environment:

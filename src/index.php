@@ -13,14 +13,21 @@
   <body>
     <div class="container">
       <?php
-        $connection = new PDO('mysql:host=mysql;dbname=test;charset=utf8', 'root', 'root');
-        $query      = $connection->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'test'");
-        $tables     = $query->fetchAll(PDO::FETCH_COLUMN);
+        $db_host   = 'mysql';
+        $db_name   = 'quickreg';
+        $db_user   = 'webuser';
+        $db_passwd = 'insecure_pw';
+
+        $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
+
+        $conn   = new PDO($pdo_dsn, $db_user, $db_passwd);
+        $query  = $conn->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'quickreg'");
+        $tables = $query->fetchAll(PDO::FETCH_COLUMN);
 
         if (empty($tables)) {
-            echo '<p class="text-center">Database <code>test</code> contains no tables.</p>';
+            echo '<p class="text-center">Database <code>quickreg</code> contains no tables.</p>';
         } else {
-            echo '<p class="text-center">Database <code>test</code> contains the following tables:</p>';
+            echo '<p class="text-center">Database <code>quickreg</code> contains the following tables:</p>';
             echo '<ul class="text-center">';
             foreach ($tables as $table) {
                 echo "<li>{$table}</li>";
