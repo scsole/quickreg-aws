@@ -3,14 +3,17 @@ version: '3.8'
 services:
 
   nginx:
-    image: nginx:1.19
+    image: nginx:1.19-alpine
     ports:
       - 80:80
+      - 8080:8080
     volumes:
       - ./src:/var/www/php:ro
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - phpmyadmindata:/usr/src/phpmyadmin
     depends_on:
       - php
+      - phpmyadmin
 
   php:
     build: ./.docker/php
@@ -28,9 +31,21 @@ services:
     volumes:
       - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - mysql-data:/var/lib/mysql
+        
+  # PhpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5-fpm-alpine
+    environment:
+      PMA_HOST: mysql
+    volumes:
+      - phpmyadmindata:/usr/src/phpmyadmin
+    depends_on:
+      - mysql
 
 volumes:
 
   mysql-data:
+
+  phpmyadmindata:
 
 # vim: ts=2 sw=2 et
