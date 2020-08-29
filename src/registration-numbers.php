@@ -30,6 +30,41 @@
       </div>
     </nav>
 
+    <!-- Registrations table -->
+    <div class="container">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Last Name</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Bib Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+            $db_host   = 'mysql';
+            $db_name   = 'quickreg';
+            $db_user   = 'webuser';
+            $db_passwd = 'insecure_pw';
+
+            $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
+
+            $pdo   = new PDO($pdo_dsn, $db_user, $db_passwd);
+            $query = $pdo->query("SELECT last_name,first_name,id FROM registrations
+                                  ORDER BY last_name, first_name");
+
+            while($row = $query->fetch()){
+              echo "<tr>
+                      <td>".$row["last_name"]."</td>
+                      <td>".$row["first_name"]."</td>
+                      <td>".$row["id"]."</td>
+                    </tr>";
+            }
+          ?>
+        </tbody>
+      </table>
+    </div>
+
     <!-- JavaScript at the end of page to load last -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
