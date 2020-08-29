@@ -1,53 +1,47 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html ng-app="RunnerModule">
+<html>
     <head>
-        <title>Create Account</title>
+        <title>Register</title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<script src="js/angular.min.js"></script>
-		<script src="js/angular-resource.min.js"></script>
     </head>
     
-    <body ng-controller="RunnerController as runnerCtrl">
-        <h1>Create Account</h1>
+	<body> 
+        <h1>Register</h1>
         <fieldset>
             <legend>Product Details</legend>
-            <form ng-submit="runnerCtrl.addRacer(runner)">
-                <label>First Name</label>
-				<input type="text" ng-model="runner.first_name" required>
-                
-                <label>Surname</label>
-                <input type="text" ng-model="runner.last_name" required>
+			<form action="/register_submit.php" method="post">
+				<label for="first_name">First Name</label>
+				<input type="text" id=first_name" required>
 
-                <label>email:</label>
-                <input type="text" ng-model="runner.email" required>
+				<label for="last_name">Last Name</label>
+				<input type="text" id=last_name" required>
 
-				<label>Gender</label>
-				<input type="radio" ng-model="runner.gender" value="female" required>
-				Female
-				</input>
 
-				<input type="radio" ng-model="runner.gender" value="male">
-				Male	
-				</input>
+				<input type="radio" id="male" name="gender" value="male" required>
+				  <label for="male">Male</label>
+				  <input type="radio" id="female" name="gender" value="female" required>
+				  <label for="female">Female</label>
+  
+				<label for="club">Club</label>
+				<input type="text" id="club">
 
-				<label>Date of Birth</label>
-				<input type="date" ng-model="runner.dob"></input>
+				<label for="dob">Date of Birth</label>
+				<input type="text" id="dob" required>
 
-				<label>Club</label>
-				<input type="text" ngmodel="runner.club"></input>
+				<label for="email_address">Email Address</label>
+				<input type="text" id="email_address" required>
 
-				<label>Email Address</label>
-				<input type="text" ngmodel="runner.email"</input>
-				
-				<label>Medical Conditions</label>
+				<label for="medical_conditions">Medical Conditions</label>
+				<input type="text" id="medical_conditions" required>
 
-			<button>Register</button>
+				<label for="emergency_contact_name">Emergency Contact Name</label>
+				<input type="text" id="emergency_contact_name" required>
+
+				<label for="emergency_contact_number">Emergency Contact Number</label>
+				<input type="text" id="emergency_contact_number" required>
+
+		<button>Register</button>
             </form>            
         </fieldset>
     </body>
