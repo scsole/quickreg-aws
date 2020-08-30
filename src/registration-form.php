@@ -173,7 +173,7 @@
 
         $stmt->execute();
 
-      echo '<p>Thank you for registering!</p>';
+      echo '<div class="alert alert-success" role="alert">Thank you for registering!</div>';
       }
     ?>
     </div>
