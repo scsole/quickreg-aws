@@ -177,7 +177,12 @@
 		$conn->commit();
       echo '<div class="alert alert-success" role="alert">Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a></div>';
 		} catch (PDOException $e) {
+			if ($e->errorInfo[1] == 1062){
       echo '<div class="alert alert-danger" role="alert">It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.</div>';
+			} else {
+      echo '<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try registering again or try later.</div>';
+			}
+			
 			$conn->rollBack();
 		}
       }
