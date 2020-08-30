@@ -13,7 +13,7 @@
   <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-sm navbar-light bg-light">
       <div class="container">
         <a class="navbar-brand" href="/">QuickREG</a>
 
@@ -31,7 +31,7 @@
     </nav>
 
     <!-- Registration form -->
-    <div class="container">
+    <div class="container mt-3">
       <form action="" method="POST">
 
         <!-- Name -->
@@ -48,26 +48,26 @@
 
         <!-- Profile -->
         <div class="form-row">
-          <div class="form-group col-md-4">
+          <div class="form-group col-md-3">
             <label for="dob">Date of Birth</label>
             <input type="date" class="form-control" name="dob" id="dob" required>
           </div>
 
-          <div class="form-group col-md-4">
-            <legend class="col-form-label pt-0">Gender</legend>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="female" value="female" required>
-              <label class="form-check-label" for="female">Female</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="male" value="male">
-              <label class="form-check-label" for="male">Male</label>
-            </div>
-          </div>
-
-          <div class="form-group col-md-4">
+          <div class="form-group col-md-9">
             <label for="club">Club</label>
             <input type="text" class="form-control" name="club" id="club" placeholder="Optional" maxlength="255">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <legend class="col-form-label pt-0">Gender</legend>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="female" value="female" required>
+            <label class="form-check-label" for="female">Female</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+            <label class="form-check-label" for="male">Male</label>
           </div>
         </div>
 
@@ -75,7 +75,7 @@
         <div class="form-group">
           <label for="email_address">Email address</label>
           <input type="email" class="form-control" name="email_address" id="email_address" aria-describedby="emailHelp" placeholder="Your email address" maxlength="254" required>
-          <small id="emailHelp" class="form-text text-muted">We won't spam your inbox</small>
+          <small id="emailHelp" class="form-text text-muted">So we can let you know when the next event is</small>
         </div>
 
         <!-- Emergency information -->
@@ -156,8 +156,10 @@
 
         $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
         $conn   	= new PDO($pdo_dsn, $db_user, $db_passwd);
+		$conn	   -> beginTransaction();
+		$conn	   -> setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         $sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp) VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
-        
+		try {
         $stmt 		= $conn->prepare($sql);
 
         $stmt->bindParam(':first_name',               $first_name);
@@ -172,8 +174,17 @@
         $stmt->bindParam(':registration_timestamp',   $registration_timestamp);
 
         $stmt->execute();
-
-      echo '<p>Thank you for registering!</p>';
+		$conn->commit();
+      echo '<div class="alert alert-success" role="alert">Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a></div>';
+		} catch (PDOException $e) {
+			if ($e->errorInfo[1] == 1062){
+      echo '<div class="alert alert-danger" role="alert">It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.</div>';
+			} else {
+      echo '<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try registering again or try later.</div>';
+			}
+			
+			$conn->rollBack();
+		}
       }
     ?>
     </div>
