@@ -49,21 +49,16 @@
 		echo $first_name;
 		echo '</h1>';
 
-		try {
 		$pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
 		$conn   	= new PDO($pdo_dsn, $db_user, $db_passwd);
 		echo "<h1>Successful connection</h1>";
-		} catch (PDOException $e) {
-			echo "DB Connection Failed: " . $e->getMessage();
-		}
-		try {
 		$sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp) VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
 		
 		$stmt 		= $conn->prepare($sql);
 
 		$stmt->bindParam(':first_name', 				$first_name);
 		$stmt->bindParam(':last_name', 					$last_name);
-		$stmt->bindParam(':gender', 					$first_name);
+		$stmt->bindParam(':gender', 					$gender);
 		$stmt->bindParam(':dob', 						$dob);
 		$stmt->bindParam(':club', 						$club);
 		$stmt->bindParam(':email_address', 				$email_address);
@@ -74,9 +69,6 @@
 
 		$stmt->execute();
 		echo "<h1>Statement successful</h1>";
-		} catch (PDOException $e) {
-			echo "Statement failed: " . $e->getMessage();
-		}
 
 	}	
 ?>
