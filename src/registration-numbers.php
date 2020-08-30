@@ -32,7 +32,14 @@
 
     <!-- Registrations table -->
     <div class="container">
-      <table class="table table-striped">
+      <div class="input-group mt-3 mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">Search</span>
+        </div>
+        <input type="text" class="form-control" id="search" onkeyup="filterRegistrations()" placeholder="Name or number accepted" aria-label="Name" aria-describedby="basic-addon2">
+      </div>
+
+      <table class="table table-striped" id="registrations">
         <thead>
           <tr>
             <th scope="col">Last Name</th>
@@ -68,6 +75,39 @@
         </tbody>
       </table>
     </div>
+
+    <script>
+    function filterRegistrations() {
+      var input, filter, table, tr, td0, td1, td2, i;
+      var lastName, firstName, regNumber;
+
+      input = document.getElementById("search");
+      filter = input.value.toLowerCase();
+      table = document.getElementById("registrations");
+      tr = table.getElementsByTagName("tr");
+
+      // Hide rows that don't match
+      for (i = 0; i < tr.length; i++) {
+        td0 = tr[i].getElementsByTagName("td")[0];
+        td1 = tr[i].getElementsByTagName("td")[1];
+        td2 = tr[i].getElementsByTagName("td")[2];
+
+        if (td0 && td1 && td2) {
+          lastName = td0.textContent || td0.innerText;
+          firstName = td1.textContent || td1.innerText;
+          regNumber = td2.textContent || td2.innerText;
+
+          if (lastName.toLowerCase().indexOf(filter) > -1
+              || firstName.toLowerCase().indexOf(filter) > -1
+              || regNumber.indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>
 
     <!-- JavaScript at the end of page to load last -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
