@@ -19,6 +19,7 @@
 		$gender = $_POST['gender'];
 		throw_if_null("gender", $gender);
 
+
 		$dob = $_POST['dob'];
 		throw_if_null("dob", $dob);
 
@@ -56,21 +57,22 @@
 			echo "DB Connection Failed: " . $e->getMessage();
 		}
 		try {
-		$sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, ::emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
+		$sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp) VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
 		
 		$stmt 		= $conn->prepare($sql);
-		$stmt->execute([
-			'first_name' => $first_name,
-			'last_name' =>	$last_name,
-			'gender' => $gender,
-			'dob' => $dob,
-			'club' => $club,
-			'email_address' => $email_address,
-			'medical_conditions' => $medical_conditions,
-			'emergency_contact_name' => $emergency_contact_name,
-			'emergency_contact_number' => $emergency_contact_number,
-			'registration_timestamp' => $registration_timestamp
-		]);
+
+		$stmt->bindParam(':first_name', 				$first_name);
+		$stmt->bindParam(':last_name', 					$last_name);
+		$stmt->bindParam(':gender', 					$first_name);
+		$stmt->bindParam(':dob', 						$dob);
+		$stmt->bindParam(':club', 						$club);
+		$stmt->bindParam(':email_address', 				$email_address);
+		$stmt->bindParam(':medical_conditions', 		$medical_conditions);
+		$stmt->bindParam(':emergency_contact_name', 	$emergency_contact_name);
+		$stmt->bindParam(':emergency_contact_number', 	$emergency_contact_number);
+		$stmt->bindParam(':registration_timestamp', 	$registration_timestamp);
+
+		$stmt->execute();
 		echo "<h1>Statement successful</h1>";
 		} catch (PDOException $e) {
 			echo "Statement failed: " . $e->getMessage();
