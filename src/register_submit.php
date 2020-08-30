@@ -6,47 +6,35 @@
 			throw new Exception("$key is null!");
 		}
 	}
-	function get_form_field($field){
-		$field = trim($field);
-		$field = stripslashes($field);
-		$field = htmlspecialchars($field);
-		return $field;
-	}
 
 	if ($_SERVER["REQUEST_METHOD"] == "POST"){
 		print_r($_POST);
-		$first_name = get_form_field("first_name");
+
 		$first_name = $_POST['first_name'];
 		throw_if_null("first_name", $first_name);
 
-		$last_name = get_form_field("last_name");
 		$last_name = $_POST['last_name'];
 		throw_if_null("last_name", $last_name);
 
 		$gender = $_POST['gender'];
-		$gender	= get_form_field("gender");
 		throw_if_null("gender", $gender);
 
 		$dob = $_POST['dob'];
-		$dob = get_form_field("dob"); 
 		throw_if_null("dob", $dob);
 
+		echo '<br><h1>'.$dob.'</h1>';
+
 		$club = $_POST['club'];
-		$club = get_form_field("club");
 
 		$email_address = $_POST['email_address'];
-		$email_address = get_form_field("email_address");
 		throw_if_null("email_address", $email_address);
 
 		$medical_conditions = $_POST['medical_conditions'];
-		$medical_conditions = get_form_field("medical_conditions"); 
 
 		$emergency_contact_name = $_POST['emergency_contact_name'];
-		$emergency_contact_name = get_form_field("emergency_contact_name");
 		throw_if_null("emergency_contact_name", $emergency_contact_name);
 
 		$emergency_contact_number = $_POST['emergency_contact_number'];
-		$emergency_contact_number = get_form_field("emergency_contact_number"); 
 		throw_if_null("emergency_contact_number", $emergency_contact_number);
 
 		$db_host   = 'mysql';
@@ -54,7 +42,8 @@
 		$db_user   = 'webuser';
 		$db_passwd = 'insecure_pw';
 
-		$timestamp 	= date('Y-m-d H:i:s');
+		$registration_timestamp 	= date('Y-m-d H:i:s');
+		echo $registration_timestamp;
 		echo '<h1>';
 		echo $first_name;
 		echo '</h1>';
@@ -67,7 +56,7 @@
 			echo "DB Connection Failed: " . $e->getMessage();
 		}
 		try {
-		$sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
+		$sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, ::emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
 		
 		$stmt 		= $conn->prepare($sql);
 		$stmt->execute([
