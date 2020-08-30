@@ -53,17 +53,39 @@
 		$db_name   = 'quickreg';
 		$db_user   = 'webuser';
 		$db_passwd = 'insecure_pw';
+
 		$timestamp 	= date('Y-m-d H:i:s');
+		echo '<h1>';
+		echo $first_name;
+		echo '</h1>';
+
 		try {
 		$pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
 		$conn   	= new PDO($pdo_dsn, $db_user, $db_passwd);
-		$sql 		= "INSERT INTO registrations (id, first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		$stmt 		= $conn->prepare($sql);
-		$stmt->execute([NULL, $first_name, $last_name, $gender, $dob, $club, $email_address, $medical_conditions, $emergency_contact_name, $emergency_contact_number, $timestamp]);
-		echo $conn.lastInsertId();
-		} catch (Exception $e){
-			$error_msg = $e.getMessage();
-			echo "<h1>$error_msg</h1>";
+		echo "<h1>Successful connection</h1>";
+		} catch (PDOException $e) {
+			echo "DB Connection Failed: " . $e->getMessage();
 		}
+		try {
+		$sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
+		
+		$stmt 		= $conn->prepare($sql);
+		$stmt->execute([
+			'first_name' => $first_name,
+			'last_name' =>	$last_name,
+			'gender' => $gender,
+			'dob' => $dob,
+			'club' => $club,
+			'email_address' => $email_address,
+			'medical_conditions' => $medical_conditions,
+			'emergency_contact_name' => $emergency_contact_name,
+			'emergency_contact_number' => $emergency_contact_number,
+			'registration_timestamp' => $registration_timestamp
+		]);
+		echo "<h1>Statement successful</h1>";
+		} catch (PDOException $e) {
+			echo "Statement failed: " . $e->getMessage();
+		}
+
 	}	
 ?>
