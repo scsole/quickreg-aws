@@ -49,11 +49,15 @@
 
             $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
 
-            $pdo   = new PDO($pdo_dsn, $db_user, $db_passwd);
-            $query = $pdo->query("SELECT last_name,first_name,id FROM registrations
-                                  ORDER BY last_name, first_name");
+            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
-            while($row = $query->fetch()){
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            $stmt = $pdo->prepare('SELECT last_name,first_name,id FROM registrations ORDER BY last_name,first_name');
+            $stmt->execute();
+
+            foreach ($stmt as $row) {
               echo "<tr>
                       <td>".$row["last_name"]."</td>
                       <td>".$row["first_name"]."</td>
