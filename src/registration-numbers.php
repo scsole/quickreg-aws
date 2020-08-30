@@ -6,16 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>QuickREG</title>
+    <title>Registration Numbers</title>
   </head>
   <body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container">
-        <a class="navbar-brand" href="#">QuickREG</a>
+        <a class="navbar-brand" href="/">QuickREG</a>
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -24,36 +24,49 @@
         <div class="collapse navbar-collapse" id="navbarToggler">
           <div class="navbar-nav">
             <a class="nav-item nav-link" href="/registration-form.php">Register Online</a>
-            <a class="nav-item nav-link" href="/registration-numbers.php">Registration Numbers</a>
+            <a class="nav-item nav-link active" href="#">Registration Numbers</a>
           </div>
         </div>
       </div>
     </nav>
 
+    <!-- Registrations table -->
     <div class="container">
-      <?php
-        $db_host   = 'mysql';
-        $db_name   = 'quickreg';
-        $db_user   = 'webuser';
-        $db_passwd = 'insecure_pw';
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Last Name</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Bib Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+            $db_host   = 'mysql';
+            $db_name   = 'quickreg';
+            $db_user   = 'webuser';
+            $db_passwd = 'insecure_pw';
 
-        $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
+            $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
 
-        $conn   = new PDO($pdo_dsn, $db_user, $db_passwd);
-        $query  = $conn->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'quickreg'");
-        $tables = $query->fetchAll(PDO::FETCH_COLUMN);
+            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
-        if (empty($tables)) {
-            echo '<p class="text-center">Database <code>quickreg</code> contains no tables.</p>';
-        } else {
-            echo '<p class="text-center">Database <code>quickreg</code> contains the following tables:</p>';
-            echo '<ul class="text-center">';
-            foreach ($tables as $table) {
-                echo "<li>{$table}</li>";
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            $stmt = $pdo->prepare('SELECT last_name,first_name,id FROM registrations ORDER BY last_name,first_name');
+            $stmt->execute();
+
+            foreach ($stmt as $row) {
+              echo "<tr>
+                      <td>".$row["last_name"]."</td>
+                      <td>".$row["first_name"]."</td>
+                      <td>".$row["id"]."</td>
+                    </tr>";
             }
-            echo '</ul>';
-        }
-      ?>
+          ?>
+        </tbody>
+      </table>
     </div>
 
     <!-- JavaScript at the end of page to load last -->
