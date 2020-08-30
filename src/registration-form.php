@@ -156,8 +156,10 @@
 
         $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
         $conn   	= new PDO($pdo_dsn, $db_user, $db_passwd);
+		$conn	   -> beginTransaction();
+		$conn	   -> setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         $sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp) VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
-        
+		try {
         $stmt 		= $conn->prepare($sql);
 
         $stmt->bindParam(':first_name',               $first_name);
@@ -172,8 +174,12 @@
         $stmt->bindParam(':registration_timestamp',   $registration_timestamp);
 
         $stmt->execute();
-
+		$conn->commit();
       echo '<div class="alert alert-success" role="alert">Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a></div>';
+		} catch (PDOException $e) {
+      echo '<div class="alert alert-danger" role="alert">It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.</div>';
+			$conn->rollBack();
+		}
       }
     ?>
     </div>
