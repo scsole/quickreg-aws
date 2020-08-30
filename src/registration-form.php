@@ -31,7 +31,7 @@
     </nav>
 
     <!-- Registration form -->
-    <div class="container">
+    <div class="container mt-3">
       <form action="" method="POST">
 
         <!-- Name -->
@@ -48,26 +48,26 @@
 
         <!-- Profile -->
         <div class="form-row">
-          <div class="form-group col-md-4">
+          <div class="form-group col-md-3">
             <label for="dob">Date of Birth</label>
             <input type="date" class="form-control" name="dob" id="dob" required>
           </div>
 
-          <div class="form-group col-md-4">
-            <legend class="col-form-label pt-0">Gender</legend>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="female" value="female" required>
-              <label class="form-check-label" for="female">Female</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="male" value="male">
-              <label class="form-check-label" for="male">Male</label>
-            </div>
-          </div>
-
-          <div class="form-group col-md-4">
+          <div class="form-group col-md-9">
             <label for="club">Club</label>
             <input type="text" class="form-control" name="club" id="club" placeholder="Optional" maxlength="255">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <legend class="col-form-label pt-0">Gender</legend>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="female" value="female" required>
+            <label class="form-check-label" for="female">Female</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+            <label class="form-check-label" for="male">Male</label>
           </div>
         </div>
 
@@ -75,7 +75,7 @@
         <div class="form-group">
           <label for="email_address">Email address</label>
           <input type="email" class="form-control" name="email_address" id="email_address" aria-describedby="emailHelp" placeholder="Your email address" maxlength="254" required>
-          <small id="emailHelp" class="form-text text-muted">We won't spam your inbox</small>
+          <small id="emailHelp" class="form-text text-muted">So we can let you know when the next event is</small>
         </div>
 
         <!-- Emergency information -->
