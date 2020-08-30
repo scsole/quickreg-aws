@@ -13,7 +13,7 @@
   <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-sm navbar-light bg-light">
       <div class="container">
         <a class="navbar-brand" href="/">QuickREG</a>
 
@@ -32,7 +32,7 @@
 
     <!-- Registrations table -->
     <div class="container">
-      <div class="input-group mt-3 mb-3">
+      <div class="input-group my-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">Search</span>
         </div>
