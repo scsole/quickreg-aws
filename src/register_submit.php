@@ -1,14 +1,11 @@
 <?php
 	function throw_if_null($key, $value){
 		if ($value == null){
-			echo "<h2>$key is null!</h2>";
-			echo "<br>";
 			throw new Exception("$key is null!");
 		}
 	}
 
 	if ($_SERVER["REQUEST_METHOD"] == "POST"){
-		print_r($_POST);
 
 		$first_name = $_POST['first_name'];
 		throw_if_null("first_name", $first_name);
@@ -23,7 +20,6 @@
 		$dob = $_POST['dob'];
 		throw_if_null("dob", $dob);
 
-		echo '<br><h1>'.$dob.'</h1>';
 
 		$club = $_POST['club'];
 
@@ -44,14 +40,9 @@
 		$db_passwd = 'insecure_pw';
 
 		$registration_timestamp 	= date('Y-m-d H:i:s');
-		echo $registration_timestamp;
-		echo '<h1>';
-		echo $first_name;
-		echo '</h1>';
 
 		$pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
 		$conn   	= new PDO($pdo_dsn, $db_user, $db_passwd);
-		echo "<h1>Successful connection</h1>";
 		$sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp) VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
 		
 		$stmt 		= $conn->prepare($sql);
@@ -68,7 +59,6 @@
 		$stmt->bindParam(':registration_timestamp', 	$registration_timestamp);
 
 		$stmt->execute();
-		echo "<h1>Statement successful</h1>";
 
 	}	
 ?>
