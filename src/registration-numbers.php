@@ -44,7 +44,7 @@
           <tr>
             <th scope="col">Last Name</th>
             <th scope="col">First Name</th>
-            <th scope="col">Bib Number</th>
+            <th scope="col">Registration Number</th>
           </tr>
         </thead>
         <tbody>
