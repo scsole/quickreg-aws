@@ -173,7 +173,7 @@
 
         $stmt->execute();
 
-      echo '<div class="alert alert-success" role="alert">Thank you for registering!</div>';
+      echo '<div class="alert alert-success" role="alert">Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a></div>';
       }
     ?>
     </div>
