@@ -129,10 +129,8 @@
         $gender = $_POST['gender'];
         throw_if_null("gender", $gender);
 
-
         $dob = $_POST['dob'];
         throw_if_null("dob", $dob);
-
 
         $club = $_POST['club'];
 
@@ -155,36 +153,51 @@
         $registration_timestamp = date('Y-m-d H:i:s');
 
         $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
-        $conn   	= new PDO($pdo_dsn, $db_user, $db_passwd);
-		$conn	   -> beginTransaction();
-		$conn	   -> setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-        $sql 		= "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp) VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
-		try {
-        $stmt 		= $conn->prepare($sql);
 
-        $stmt->bindParam(':first_name',               $first_name);
-        $stmt->bindParam(':last_name',                $last_name);
-        $stmt->bindParam(':gender',                   $gender);
-        $stmt->bindParam(':dob',                      $dob);
-        $stmt->bindParam(':club',                     $club);
-        $stmt->bindParam(':email_address',            $email_address);
-        $stmt->bindParam(':medical_conditions',       $medical_conditions);
-        $stmt->bindParam(':emergency_contact_name',   $emergency_contact_name);
-        $stmt->bindParam(':emergency_contact_number', $emergency_contact_number);
-        $stmt->bindParam(':registration_timestamp',   $registration_timestamp);
+        $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
-        $stmt->execute();
-		$conn->commit();
-      echo '<div class="alert alert-success" role="alert">Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a></div>';
-		} catch (PDOException $e) {
-			if ($e->errorInfo[1] == 1062){
-      echo '<div class="alert alert-danger" role="alert">It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.</div>';
-			} else {
-      echo '<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try registering again or try later.</div>';
-			}
-			
-			$conn->rollBack();
-		}
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $sql = "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp)
+                VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
+
+        $pdo->beginTransaction();
+        try {
+          $stmt = $pdo->prepare($sql);
+
+          $stmt->bindParam(':first_name',               $first_name);
+          $stmt->bindParam(':last_name',                $last_name);
+          $stmt->bindParam(':gender',                   $gender);
+          $stmt->bindParam(':dob',                      $dob);
+          $stmt->bindParam(':email_address',            $email_address);
+          $stmt->bindParam(':emergency_contact_name',   $emergency_contact_name);
+          $stmt->bindParam(':emergency_contact_number', $emergency_contact_number);
+          $stmt->bindParam(':registration_timestamp',   $registration_timestamp);
+
+          if (!empty($club)) {
+            $stmt->bindParam(':club', $club);
+          } else {
+            $stmt->bindValue(':club', null, PDO::PARAM_INT);
+          }
+          
+          if (!empty($medical_conditions)) {
+            $stmt->bindParam(':medical_conditions', $medical_conditions);
+          } else {
+            $stmt->bindValue(':medical_conditions', null, PDO::PARAM_INT);
+          }
+
+          $stmt->execute();
+          $pdo->commit();
+          echo '<div class="alert alert-success" role="alert">Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a></div>';
+        } catch (PDOException $e) {
+          if ($e->errorInfo[1] == 1062){
+            echo '<div class="alert alert-danger" role="alert">It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.</div>';
+          } else {
+            echo '<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try registering again or try later.</div>';
+          }
+          $pdo->rollBack();
+        }
       }
     ?>
     </div>
