@@ -10,7 +10,7 @@ services:
     volumes:
       - ./src:/var/www/php:ro
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d:ro
-      - phpmyadmindata:/usr/src/phpmyadmin
+      - phpmyadmindata:/usr/src/phpmyadmin:ro
     depends_on:
       - php
       - phpmyadmin
