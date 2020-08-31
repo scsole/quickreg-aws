@@ -170,12 +170,22 @@
           $stmt->bindParam(':last_name',                $last_name);
           $stmt->bindParam(':gender',                   $gender);
           $stmt->bindParam(':dob',                      $dob);
-          $stmt->bindParam(':club',                     $club);
           $stmt->bindParam(':email_address',            $email_address);
-          $stmt->bindParam(':medical_conditions',       $medical_conditions);
           $stmt->bindParam(':emergency_contact_name',   $emergency_contact_name);
           $stmt->bindParam(':emergency_contact_number', $emergency_contact_number);
           $stmt->bindParam(':registration_timestamp',   $registration_timestamp);
+
+          if (!empty($club)) {
+            $stmt->bindParam(':club', $club);
+          } else {
+            $stmt->bindValue(':club', null, PDO::PARAM_INT);
+          }
+          
+          if (!empty($medical_conditions)) {
+            $stmt->bindParam(':medical_conditions', $medical_conditions);
+          } else {
+            $stmt->bindValue(':medical_conditions', null, PDO::PARAM_INT);
+          }
 
           $stmt->execute();
           $pdo->commit();
