@@ -177,9 +177,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
           WHERE first_name = ? AND last_name = ? AND dob = ?';
         $check_stmt = $pdo->prepare($check_sql);
         $check_stmt->execute([$first_name, $last_name, $dob]);
-        $existing = $check_stmt->rowCount();
+        $existing = $check_stmt->fetchColumn();
 
-        if ($existing == 0) {
+        if (!$existing) {
           // Use prepared statements to prevent SQL injection
           $sql = 'INSERT INTO registrations (
             first_name,
@@ -232,6 +232,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 
         } else {
           // Registration already exists alert
+          error_log('Duplicate registration - id='.$existing);
           echo '<div class="alert alert-primary" role="alert">
               It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to find your number. If your name does not appear in the list or this is your first time registering then please contact us.
             </div>';
