@@ -121,9 +121,7 @@ function validate_date($date) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
-  /**
-   * Check if variables are set.
-  */
+  /* Check if variables are set. */
   if (isset($_POST['first_name'])
     && isset($_POST['last_name'])
     && isset($_POST['gender'])
@@ -145,9 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     $emergency_contact_name = trim($_POST['emergency_contact_name']);
     $emergency_contact_number = trim($_POST['emergency_contact_number']);
 
-    /**
-     * Validate data before it enters the database
-     */
+    /* Validate data before it enters the database. */
     if (strlen($first_name) > 0 && strlen($first_name) <= 255
       && strlen($last_name) > 0 && strlen($last_name) <= 255
       && ($gender == "female" || $gender == "male")
@@ -158,44 +154,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
       && strlen($emergency_contact_name) > 0 && strlen($emergency_contact_name) <= 255
       && strlen($emergency_contact_number) > 0 && strlen($emergency_contact_number) <= 40
     ) {
-
-      error_log("Validation passed");
-      $db_host   = 'mysql';
-      $db_name   = 'quickreg';
-      $db_user   = 'webuser';
-      $db_passwd = 'insecure_pw';
-
-      $registration_timestamp = date('Y-m-d H:i:s');
-
-      $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
-
-      $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
-      $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-      $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-      $sql = "INSERT INTO registrations (first_name, last_name, gender, dob, club, email_address, medical_conditions, emergency_contact_name, emergency_contact_number, registration_timestamp)
-              VALUES (:first_name, :last_name, :gender, :dob, :club, :email_address, :medical_conditions, :emergency_contact_name, :emergency_contact_number, :registration_timestamp)";
-
-      $pdo->beginTransaction();
       try {
+        /* Setup the database connection. */
+        $db_host   = 'mysql';
+        $db_name   = 'quickreg';
+        $db_user   = 'webuser';
+        $db_passwd = 'insecure_pw';
+        $pdo_dsn   = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
+
+        $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
+        
+        /*
+         * Disable the emulation of prepared statements and capture errors in
+         * logs instead of printing them to the screen
+         */
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        /* Use prepared statements to prevent SQL injection. */
+        $sql = 'INSERT INTO registrations (
+                first_name,
+                last_name,
+                gender,
+                dob,
+                club,
+                email_address,
+                medical_conditions,
+                emergency_contact_name,
+                emergency_contact_number,
+                registration_timestamp
+            ) VALUES (
+                :first_name,
+                :last_name,
+                :gender,
+                :dob,
+                :club,
+                :email_address,
+                :medical_conditions,
+                :emergency_contact_name,
+                :emergency_contact_number,
+                Now()
+            )';
+
         $stmt = $pdo->prepare($sql);
 
-        $stmt->bindParam(':first_name',               $first_name);
-        $stmt->bindParam(':last_name',                $last_name);
-        $stmt->bindParam(':gender',                   $gender);
-        $stmt->bindParam(':dob',                      $dob);
-        $stmt->bindParam(':email_address',            $email_address);
-        $stmt->bindParam(':emergency_contact_name',   $emergency_contact_name);
+        $stmt->bindParam(':first_name', $first_name);
+        $stmt->bindParam(':last_name', $last_name);
+        $stmt->bindParam(':gender', $gender);
+        $stmt->bindParam(':dob', $dob);
+        $stmt->bindParam(':email_address', $email_address);
+        $stmt->bindParam(':emergency_contact_name', $emergency_contact_name);
         $stmt->bindParam(':emergency_contact_number', $emergency_contact_number);
-        $stmt->bindParam(':registration_timestamp',   $registration_timestamp);
 
+        // Use null values if applicable for optionals
         if (!empty($club)) {
           $stmt->bindParam(':club', $club);
         } else {
           $stmt->bindValue(':club', null, PDO::PARAM_INT);
         }
-        
         if (!empty($medical_conditions)) {
           $stmt->bindParam(':medical_conditions', $medical_conditions);
         } else {
@@ -203,23 +219,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         }
 
         $stmt->execute();
-        $pdo->commit();
-        echo '<div class="alert alert-success" role="alert">Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a></div>';
+
+        /* Display user feedback. */
+        echo '<div class="alert alert-success" role="alert">
+            Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a>
+          </div>';
+
       } catch (PDOException $e) {
+        error_log('PDOException - ' . $e->getMessage(), 0);
+
         if ($e->errorInfo[1] == 1062){
-          echo '<div class="alert alert-danger" role="alert">It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.</div>';
+          echo '<div class="alert alert-primary" role="alert">
+              It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.
+            </div>';
         } else {
-          echo '<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try registering again or try later.</div>';
+          /*
+           * Stop executing, return an Internal Server Error HTTP status code
+           * (500), and display an error.
+           */
+          http_response_code(500);
+          die('<div class="alert alert-danger" role="alert">
+              It seems something has gone wrong on our end. Please try registering again or try later.
+            </div>');
         }
-        $pdo->rollBack();
       }
     } else {
-      /**
+      /*
        * If data validation failed, stop executing, return a 'Bad request'
        * HTTP status code (400), and display an error.
        */
       http_response_code(400);
-      die('<div class="alert alert-danger" role="alert">Error processing bad or malformed request</div>');
+      die('<div class="alert alert-danger" role="alert">
+        Error processing bad or malformed request
+      </div>');
     }
   }
 }
