@@ -78,7 +78,7 @@ try {
 } catch (PDOException $e) {
   error_log('PDOException - ' . $e->getMessage(), 0);
   http_response_code(500);
-  die('<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try registering again or try later.</div>');
+  die('<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try again later.</div>');
 }
 ?>
         </tbody>
