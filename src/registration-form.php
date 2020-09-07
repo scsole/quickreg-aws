@@ -213,6 +213,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         }
         $pdo->rollBack();
       }
+    } else {
+      /**
+       * If data validation failed, stop executing, return a 'Bad request'
+       * HTTP status code (400), and display an error.
+       */
+      http_response_code(400);
+      die('<div class="alert alert-danger" role="alert">Error processing bad or malformed request</div>');
     }
   }
 }
