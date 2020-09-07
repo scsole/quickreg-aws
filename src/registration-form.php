@@ -230,7 +230,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 
         if ($e->errorInfo[1] == 1062){
           echo '<div class="alert alert-primary" role="alert">
-              It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to double check if you have registered. If you have registered your name does not appear on the registration numbers then please contact us.
+              It seems that you have already registered. Please check the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a> to find your number. If your name does not appear in the list or this is your first time registering then please contact us.
             </div>';
         } else {
           /*
