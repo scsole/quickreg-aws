@@ -121,16 +121,16 @@ function validate_date($date) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
-  /* Check if variables are set. */
-  if (isset($_POST['first_name'])
-    && isset($_POST['last_name'])
-    && isset($_POST['gender'])
-    && isset($_POST['dob'])
-    && isset($_POST['club'])
-    && isset($_POST['email_address'])
-    && isset($_POST['medical_conditions'])
-    && isset($_POST['emergency_contact_name'])
-    && isset($_POST['emergency_contact_number'])
+  // Check if variables are set.
+  if (isset($_POST['first_name'],
+    $_POST['last_name'],
+    $_POST['gender'],
+    $_POST['dob'],
+    $_POST['club'],
+    $_POST['email_address'],
+    $_POST['medical_conditions'],
+    $_POST['emergency_contact_name'],
+    $_POST['emergency_contact_number'])
   ) {
 
     $first_name = trim($_POST['first_name']);
@@ -143,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     $emergency_contact_name = trim($_POST['emergency_contact_name']);
     $emergency_contact_number = trim($_POST['emergency_contact_number']);
 
-    /* Validate data before it enters the database. */
+    // Validate data before it enters the database.
     if (strlen($first_name) > 0 && strlen($first_name) <= 255
       && strlen($last_name) > 0 && strlen($last_name) <= 255
       && ($gender == "female" || $gender == "male")
@@ -155,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
       && strlen($emergency_contact_number) > 0 && strlen($emergency_contact_number) <= 40
     ) {
       try {
-        /* Setup the database connection. */
+        // Setup the database connection.
         $db_host   = 'mysql';
         $db_name   = 'quickreg';
         $db_user   = 'webuser';
@@ -171,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        /* Use prepared statements to prevent SQL injection. */
+        // Use prepared statements to prevent SQL injection.
         $sql = 'INSERT INTO registrations (
                 first_name,
                 last_name,
@@ -220,7 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 
         $stmt->execute();
 
-        /* Display user feedback. */
+        // Display user feedback.
         echo '<div class="alert alert-success" role="alert">
             Thank you for registering! You name should now appear in the <a href="/registration-numbers.php" class="alert-link">Registration Numbers</a>
           </div>';

@@ -50,7 +50,7 @@
         <tbody>
 <?php
 try {
-  /* Setup the database connection. */
+  // Setup the database connection.
   $db_host   = 'mysql';
   $db_name   = 'quickreg';
   $db_user   = 'webuser';
