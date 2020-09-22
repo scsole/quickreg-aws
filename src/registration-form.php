@@ -74,7 +74,7 @@
         <!-- Contact information -->
         <div class="form-group">
           <label for="email_address">Email address</label>
-          <input type="email" class="form-control" name="email_address" id="email_address" aria-describedby="emailHelp" placeholder="Your email address" maxlength="254" required>
+          <input type="email" pattern=".+@.+\..+" class="form-control" name="email_address" id="email_address" aria-describedby="emailHelp" placeholder="Your email address" maxlength="254" required>
           <small id="emailHelp" class="form-text text-muted">So we can let you know when the next event is</small>
         </div>
 
