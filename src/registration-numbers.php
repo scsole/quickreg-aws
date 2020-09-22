@@ -48,30 +48,39 @@
           </tr>
         </thead>
         <tbody>
-          <?php
-            $db_host   = 'mysql';
-            $db_name   = 'quickreg';
-            $db_user   = 'webuser';
-            $db_passwd = 'insecure_pw';
+<?php
+$host = 'mysql';
+$db   = 'quickreg';
+$user = 'webuser';
+$pass = 'insecure_pw';
+$charset = 'utf8';
 
-            $pdo_dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8";
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
-            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
+$options = [
+PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+PDO::ATTR_EMULATE_PREPARES   => false,
+];
+try {
+  $pdo = new PDO($dsn, $user, $pass, $options);
 
-            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  $stmt = $pdo->prepare('SELECT last_name,first_name,id FROM registrations ORDER BY last_name,first_name');
+  $stmt->execute();
 
-            $stmt = $pdo->prepare('SELECT last_name,first_name,id FROM registrations ORDER BY last_name,first_name');
-            $stmt->execute();
-
-            foreach ($stmt as $row) {
-              echo "<tr>
-                      <td>".$row["last_name"]."</td>
-                      <td>".$row["first_name"]."</td>
-                      <td>".$row["id"]."</td>
-                    </tr>";
-            }
-          ?>
+  foreach ($stmt as $row) {
+    echo '<tr>
+            <td>'.$row['last_name'].'</td>
+            <td>'.$row['first_name'].'</td>
+            <td>'.$row['id'].'</td>
+          </tr>';
+  }
+} catch (PDOException $e) {
+  error_log('PDOException - ' . $e->getMessage(), 0);
+  http_response_code(500);
+  die('<div class="alert alert-danger" role="alert">It seems something has gone wrong on our end. Please try again later.</div>');
+}
+?>
         </tbody>
       </table>
     </div>
