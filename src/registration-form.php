@@ -158,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
       $host = 'mysql';
       $db   = 'quickreg';
       $user = 'webuser';
-      $pass = 'insecure_pw';
+      $pass = 'webuser_pw';
       $charset = 'utf8';
 
       $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
