@@ -26,10 +26,10 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: insecure_root_pw
-      MYSQL_USER: webuser
-      MYSQL_PASSWORD: insecure_pw
-      MYSQL_DATABASE: quickreg
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+      - MYSQL_DATABASE
     volumes:
       - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ./.docker/mysql/db-setup.sql:/docker-entrypoint-initdb.d/db-setup.sql:ro
@@ -38,7 +38,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5-fpm-alpine
     environment:
-      PMA_HOST: mysql
+      - PMA_HOST=mysql
     volumes:
       - phpmyadmindata:/usr/src/phpmyadmin
     depends_on:
