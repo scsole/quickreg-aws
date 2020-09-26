@@ -49,10 +49,10 @@
         </thead>
         <tbody>
 <?php
-$host = 'mysql';
-$db   = 'quickreg';
-$user = 'webuser';
-$pass = 'webuser_pw';
+$host = getenv('DB_HOST');
+$db   = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$pass = getenv('DB_PASS');
 $charset = 'utf8';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

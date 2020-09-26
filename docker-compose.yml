@@ -17,6 +17,11 @@ services:
 
   php:
     build: ./.docker/php
+    environment:
+      - DB_HOST=mysql
+      - DB_USER
+      - DB_PASS
+      - DB_NAME
     working_dir: /var/www/php
     volumes:
       - ./src:/var/www/php
