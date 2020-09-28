@@ -40,6 +40,10 @@ Vagrant.configure("2") do |config|
     override.nfs.functional = false
     override.vm.allowed_synced_folder_types = :rsync
 
+    # Sync only the app directory.
+    config.vm.synced_folder "app/", "/vagrant", type: "rsync",
+        rsync__exclude: ".git/"
+
     # The name of the EC2 keypair as set in Amazon.
     aws.keypair_name = "quickreg"
     # The path to the private key on the local machine.
