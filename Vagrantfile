@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :aws do |aws, override|
     # AWS configuration should be set in the environment. Ensure these are
-    # accesible.
+    # accessible.
     #
     # aws.access_key_id = "YOUR KEY"
     # aws.secret_access_key = "YOUR SECRET KEY"
@@ -74,15 +74,19 @@ Vagrant.configure("2") do |config|
     # AMI for us-east-1 focal hvm
     aws.ami = "ami-0dba2cb6798deb6d8"
 
-    # Connect using username "ubuntu".
+    # Connect using the correct username.
     override.ssh.username = "ubuntu"
   end
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y docker docker-compose
+    systemctl enable --now docker.service
+    usermod -aG docker ubuntu
+    cd /vagrant
+    docker-compose up -d
+  SHELL
 end
