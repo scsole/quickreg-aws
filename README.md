@@ -4,13 +4,32 @@ A simple solution to quickly collect registrations for an event.
 
 ## Quick start
 
+## Local build
+
 You must have a working installation of `docker` and `docker-compose`.
 
-1. Clone and `cd` into this repo
-2. Run `docker-compose --env-file .env.example up -d`
-3. Browse to [localhost](http://localhost) for the public web interface
-4. Browse to [localhost:8080](http://localhost:8080) for the phpMyAdmin
+1. Run `docker-compose --env-file .env.example up -d`
+2. Browse to [localhost](http://localhost) for the public web interface
+3. Browse to [localhost:8080](http://localhost:8080) for the phpMyAdmin
    console. The default root password is `root`.
+
+## Deploy to EC2
+
+You must have a working installation of Vagrant along with the AWS plug-in and
+`aws-cli`.
+
+```bash
+# Install the AWS plug-in and download dummy box
+vagrant plugin install vagrant-aws
+vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
+```
+
+1. Export your aws credentials (as defined in `~/.aws/credentials`). You should ensure
+`AWS_ACCESS_KEY_ID` `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` are defined.
+2. Ensure you have generated valid EC2 keypair named `quickreg` with the
+private key located at ~/.ssh/quickreg.pem`.
+3. Add AWS Security Group IDs for web access (port `80` and `8080`) and ssh
+(`22`) to the `Vagrantfile`.
 
 ## Images used
 

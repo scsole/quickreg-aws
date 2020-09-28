@@ -1,64 +1,67 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+# vim: ts=2 sw=2 et
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
+  # Online Vagrantfile documentation is at https://docs.vagrantup.com.
+  
+  # The AWS provider does not actually need to use a Vagrant box file.
+  config.vm.box = "dummy"
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "base"
+  config.vm.provider :aws do |aws, override|
+    # AWS configuration should be set in the environment. Ensure these are
+    # accesible.
+    #
+    # aws.access_key_id = "YOUR KEY"
+    # aws.secret_access_key = "YOUR SECRET KEY"
+    # aws.session_token = "SESSION TOKEN"
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  # config.vm.box_check_update = false
+    # The region for Amazon Educate is fixed.
+    aws.region = "us-east-1"
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # NOTE: This will enable public access to the opened port
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+    # These options force synchronisation of files to the VM's
+    # /vagrant directory using rsync, rather than using trying to use
+    # SMB (which will not be available by default).
+    override.nfs.functional = false
+    override.vm.allowed_synced_folder_types = :rsync
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine and only allow access
-  # via 127.0.0.1 to disable public access
-  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+    # The name of the EC2 keypair as set in Amazon.
+    aws.keypair_name = "quickreg"
+    # The path to the private key on the local machine.
+    override.ssh.private_key_path = "~/.ssh/quickreg.pem"
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+    # Use a cheap t2.micro EC2 instance type.
+    aws.instance_type = "t2.micro"
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+    # You need to indicate the list of security groups your VM should
+    # be in. Each security group will be of the form "sg-...", and
+    # they should be comma-separated (if you use more than one) within
+    # square brackets.
+    #
+    # ssh-access, web-access
+    ## aws.security_groups = [""]
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+    # For Vagrant to deploy to EC2 for Amazon Educate accounts, it
+    # seems that a specific availability_zone needs to be selected
+    # (will be of the form "us-east-1a"). The subnet_id for that
+    # availability_zone needs to be included, too (will be of the form
+    # "subnet-...").
+    aws.availability_zone = "us-east-1d"
+    aws.subnet_id = "subnet-5db2d910"
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
+    # AMI (i.e., hard disk image) to use. The official Ubuntu AMIs can be found
+    # at https://cloud-images.ubuntu.com/locator/ec2/
+    #
+    # AMI for us-east-1 focal hvm
+    aws.ami = "ami-0dba2cb6798deb6d8"
+
+    # Connect using username "ubuntu".
+    override.ssh.username = "ubuntu"
+  end
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
