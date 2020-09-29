@@ -45,9 +45,9 @@ Vagrant.configure("2") do |config|
         rsync__exclude: ".git/"
 
     # The name of the EC2 keypair as set in Amazon.
-    aws.keypair_name = "quickreg"
+    aws.keypair_name = "quickreg-laptop" ### TODO: Autofill
     # The path to the private key on the local machine.
-    override.ssh.private_key_path = "~/.ssh/quickreg.pem"
+    override.ssh.private_key_path = "~/.ssh/quickreg.pem" ### TODO: Autofill
 
     # Use a cheap t2.micro EC2 instance type.
     aws.instance_type = "t2.micro"
@@ -58,7 +58,7 @@ Vagrant.configure("2") do |config|
     # square brackets.
     #
     # ssh-access, web-access
-    ## aws.security_groups = [""]
+    aws.security_groups = ["sg-0c8178950ff70a3de"] ### TODO: Autofill
 
     # For Vagrant to deploy to EC2 for Amazon Educate accounts, it
     # seems that a specific availability_zone needs to be selected
@@ -66,7 +66,10 @@ Vagrant.configure("2") do |config|
     # availability_zone needs to be included, too (will be of the form
     # "subnet-...").
     aws.availability_zone = "us-east-1d"
-    aws.subnet_id = "subnet-5db2d910"
+    aws.subnet_id = "subnet-0392c0b81aaddc28b" ### TODO: Autofill
+
+    # Associate a public IP address to an instance in a VPC
+    # aws.associate_public_ip = true
 
     # AMI (i.e., hard disk image) to use. The official Ubuntu AMIs can be found
     # at https://cloud-images.ubuntu.com/locator/ec2/
