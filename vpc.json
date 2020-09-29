@@ -1,9 +1,0 @@
-{
-    "CidrBlock": "10.0.0.0/16",
-    "AmazonProvidedIpv6CidrBlock": true,
-    "Ipv6Pool": "",
-    "Ipv6CidrBlock": "",
-    "DryRun": true,
-    "InstanceTenancy": "host",
-    "Ipv6CidrBlockNetworkBorderGroup": ""
-}
