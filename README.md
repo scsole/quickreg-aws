@@ -2,15 +2,25 @@
 
 A simple solution to quickly collect registrations for an event.
 
-## Quick start
+## Deploy via AWS quick start
 
-You must have a working installation of `docker` and `docker-compose`.
+Requires `aws`, `vagrant`, and the Vagrant AWS plug-in.
 
-1. Clone and `cd` into this repo
-2. Run `docker-compose --env-file .env.example up -d`
-3. Browse to [localhost](http://localhost) for the public web interface
-4. Browse to [localhost:8080](http://localhost:8080) for the phpMyAdmin
-   console. The default root password is `root`.
+1. Ensure the AWS-CLI has been configured with: `aws configure`
+2. Run `./quickreg init`
+3. Run `./quickreg start`
+4. Browse to the instance's public DNS address for the public web interface
+5. Browse to the instance's public DNS address via port `8080` for the
+phpMyAdmin console. The default `webuser` password is `webuser_pw`
+
+<details>
+<summary>How to install the Vagrant AWS plugin</summary>
+
+```bash
+vagrant plugin install vagrant-aws
+vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
+```
+</details>
 
 ## Images used
 
@@ -24,7 +34,11 @@ Image | Tag
 [MySQL](https://hub.docker.com/_/mysql) | `8.0`
 [phpMyAdmin](https://hub.docker.com/_/phpmyadmin) | `5-fpm-alpine`
 
-## Usage
+## Docker usage
+
+> **NOTE:** The following commands can be used on the EC2 instance when in the
+`/vagrant` directory. Since only the EC2 instance has access to the Amazon RDS,
+it is not possible to run the application locally with database access.
 
 > **NOTE:** Environment variables are used to configure the containers. An
 example environment file `.env.example` is included within this repository.
@@ -66,5 +80,5 @@ docker-compose down -v
 Start a basic shell inside a container
 
 ```bash
-docker-compose exec <service> bash
+docker-compose exec <service> sh
 ```

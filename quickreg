@@ -1,0 +1,67 @@
+#!/bin/bash
+
+
+#######################################
+# FUNCTIONS
+#######################################
+
+# Create .env from .env.example
+env () {
+    if [ ! -f app/.env ]; then
+        cp app/.env.example app/.env
+    fi
+}
+
+# Initialise the Docker environment and AWS VPC
+init () {
+    env #\
+        # && ./aws-init.sh
+    # TODO: Call AWS init script (should also modify Vagrantfile)
+}
+
+# Destroy the EC2 instance
+destroy () {
+    read -p "This will remove the EC2 instance, docker containers and volumes. Are you sure? [y/N]: " -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then exit; fi
+    vagrant destroy
+    # TODO: Destroy RDS instance
+}
+
+# Start the EC2 instance
+up () {
+    vagrant up --provider=aws
+    # TODO: Create RDS instance
+}
+
+
+#######################################
+# MENU
+#######################################
+
+case "$1" in
+    init)
+        init
+        ;;
+    destroy)
+        destroy
+        ;;
+    up)
+        up
+        ;;
+    *)
+        cat << EOF
+
+Command line helper program for deploying QuickREG to AWS.
+
+Usage:
+    quickreg <command>
+
+Available commands:
+    init ...................................... Configure an AWS VPC and docker enviornment
+    up ........................................ Start an EC2 and RDS instance along with docker containers
+    destroy ................................... Stop the EC2 instance along with the docker containers
+
+EOF
+        exit 1
+        ;;
+esac

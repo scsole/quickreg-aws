@@ -1,4 +1,7 @@
+**/.env
+**/.env.ci
+**/.env.dev
+**/.env.prod
+.vagrant
+.aws
 .env
-.env.ci
-.env.dev
-.env.prod
