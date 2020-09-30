@@ -4,7 +4,7 @@ A simple solution to quickly collect registrations for an event.
 
 ## Deploy via AWS quick start
 
-Requires `aws`, `vagrant`, and the Vagrant AWS plug-in.
+Requires `aws`, `jq`, `vagrant`, and the Vagrant AWS plug-in.
 
 1. Ensure the AWS-CLI has been configured with: `aws configure`
 2. Run `./quickreg init`

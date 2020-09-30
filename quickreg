@@ -24,11 +24,7 @@ destroy () {
     vagrant destroy
     read -p "    Are you sure you want to destroy the RDS database? [y/N]: " -r
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then exit; fi
-    . app/.env
-    aws rds delete-db-instance \
-        --db-instance-identifier "$DB_INSTANCE_IDENTIFIER" \
-        --skip-final-snapshot > /dev/null
-    printf "    Deleting RDS DB instance.\n"
+    ./rds-destroy
 }
 
 # Start the EC2 and RDS instances
