@@ -91,7 +91,7 @@ Vagrant.configure("2") do |config|
     usermod -aG docker ubuntu
     cd /vagrant
     python3 -m pip install python-dotenv mysql-connector-python
-    python3 provision-db.py
+    python3 db-setup.py
     docker-compose up -d
   SHELL
 end
