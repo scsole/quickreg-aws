@@ -84,7 +84,7 @@ SUBNET_ID_PRIVATE_TWO=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PRIVATE_T
 aws ec2 create-tags --resources $SUBNET_ID_PRIVATE_TWO \
 	--tags Key=Name,Value="$SUBNET_NAME_PRIVATE_TWO"
 
-SECURITY_GROUP_WEB_SERVER_NAME="security-group-web-server"
+SECURITY_GROUP_WEB_SERVER_NAME="security-group-web-server-quickreg"
 printf "Creating security group: $SECURITY_GROUP_WEB_SERVER_NAME\n\n"
 SECURITY_GROUP_WEB_SERVER_DESCRIPTION="Security Group for EC2 instance running a web server"
 SECURITY_GROUP_WEB_SERVER_ID=`aws ec2 create-security-group \
@@ -98,7 +98,7 @@ aws ec2 authorize-security-group-ingress \
 	--group-id $SECURITY_GROUP_WEB_SERVER_ID \
 	--ip-permissions file://$SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE
 
-SECURITY_GROUP_DB_NAME="security-group-db-server"
+SECURITY_GROUP_DB_NAME="security-group-db-server-quickreg"
 printf "Creating security group: $SECURITY_GROUP_DB_NAME\n\n"
 SECURITY_GROUP_DB_DESCRIPTION="Security Group for RDS running MySQL"
 # TODO Investigate aws create-db-security-group
@@ -112,7 +112,7 @@ SECURITY_GROUP_DB_PERMISSIONS_FILE="security-group-db-server-permissions.json"
 aws ec2 authorize-security-group-ingress \
 	--group-id $SECURITY_GROUP_DB_ID \
 	--ip-permissions file://$SECURITY_GROUP_DB_PERMISSIONS_FILE
-SUBNET_NAME_DB="subnet-db"
+SUBNET_NAME_DB="subnet-db-quickreg"
 SUBNET_DESCRIPTION_DB="Subnet group for MySQL database"
 printf "Creating DB Subnet group: $SUBNET_NAME_DB\n\n"
 aws rds create-db-subnet-group \
