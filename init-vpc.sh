@@ -74,7 +74,7 @@ SUBNET_ID_PRIVATE_ONE=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PRIVATE_O
 aws ec2 create-tags --resources $SUBNET_ID_PRIVATE_ONE \
 	--tags Key=Name,Value="$SUBNET_NAME_PRIVATE_ONE"
 
-SUBNET_NAME_PRIVATE_TWO="subnet-$AVAILABILITY_ZONE-quickreg-private-1"
+SUBNET_NAME_PRIVATE_TWO="subnet-$AVAILABILITY_ZONE-quickreg-private-2"
 printf "Creating subnet: $SUBNET_NAME_PRIVATE_TWO\n\n"
 SUBNET_CIDR_PRIVATE_TWO="10.0.2.0/24"
 SUBNET_AVAILABILITY_ZONE_PRIVATE_TWO="${AVAILABILITY_ZONE}b"
@@ -101,6 +101,7 @@ aws ec2 authorize-security-group-ingress \
 SECURITY_GROUP_DB_NAME="security-group-db-server"
 printf "Creating security group: $SECURITY_GROUP_DB_NAME\n\n"
 SECURITY_GROUP_DB_DESCRIPTION="Security Group for RDS running MySQL"
+# TODO Investigate aws create-db-security-group
 SECURITY_GROUP_DB_ID=`aws ec2 create-security-group \
 	--group-name $SECURITY_GROUP_DB_NAME \
 	--description "$SECURITY_GROUP_DB_DESCRIPTION" \
@@ -111,11 +112,18 @@ SECURITY_GROUP_DB_PERMISSIONS_FILE="security-group-db-server-permissions.json"
 aws ec2 authorize-security-group-ingress \
 	--group-id $SECURITY_GROUP_DB_ID \
 	--ip-permissions file://$SECURITY_GROUP_DB_PERMISSIONS_FILE
-
+SUBNET_NAME_DB="subnet-db"
+SUBNET_DESCRIPTION_DB="Subnet group for MySQL database"
+printf "Creating DB Subnet group: $SUBNET_NAME_DB\n\n"
+aws rds create-db-subnet-group \
+	--db-subnet-group-name $SUBNET_NAME_DB \
+	--db-subnet-group-description "Subnet group for MySQL database" \
+	--subnet-ids "[$SUBNET_ID_PUBLIC_ONE,$SUBNET_ID_PRIVATE_ONE,$SUBNET_ID_PRIVATE_TWO]"
 KEY_PAIR_NAME="key-pair-quickreg"
 KEY_PAIR_PATH="$KEY_PAIR_NAME.pem"
 printf "Creating key pair: $KEY_PAIR_NAME\n"
 aws ec2 create-key-pair --key-name $KEY_PAIR_NAME --query 'KeyMaterial' --output text > $KEY_PAIR_PATH
 chmod 400 "$KEY_PAIR_PATH"
-printf "Created key pair: $KEY_PAIR_NAME at $KEY_PAIR_PATH\n\n"
+printf "Created key pair: $KEY_PAIR_NAME at ./$KEY_PAIR_PATH\n\n"
+
 printf "Finished\n\n"
