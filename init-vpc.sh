@@ -27,7 +27,7 @@ INTERNET_GATEWAY_ID=`aws ec2 create-internet-gateway \
 	--query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' --output text`
 aws ec2 create-tags --resources $INTERNET_GATEWAY_ID \
 	--tags Key=Name,Value="$INTERNET_GATEWAY_NAME"
-printf "Attaching Internet Gateway: $INTERNET_GATEWAY_NAME\n\n"
+printf "Attaching Internet Gateway: $INTERNET_GATEWAY_NAME to VPC: $VPC_NAME\n\n"
 aws ec2 attach-internet-gateway --vpc-id $VPC_ID \
 	--internet-gateway-id $INTERNET_GATEWAY_ID
 
@@ -73,12 +73,31 @@ SUBNET_ID_PRIVATE_ONE=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PRIVATE_O
 	--query 'Subnet.{SubnetId:SubnetId}' --output text`
 aws ec2 create-tags --resources $SUBNET_ID_PRIVATE_ONE \
 	--tags Key=Name,Value="$SUBNET_NAME_PRIVATE_ONE"
-# aws ec2 create-key-pair
 
-KEY_PAIR_NAME="key-pair-quickreg.pem"
-KEY_PAIR_PATH="./$KEY_PAIR_NAME"
+SUBNET_NAME_PRIVATE_TWO="subnet-$AVAILABILITY_ZONE-quickreg-private-1"
+printf "Creating subnet: $SUBNET_NAME_PRIVATE_TWO\n\n"
+SUBNET_CIDR_PRIVATE_TWO="10.0.2.0/24"
+SUBNET_AVAILABILITY_ZONE_PRIVATE_TWO="${AVAILABILITY_ZONE}b"
+SUBNET_ID_PRIVATE_TWO=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PRIVATE_TWO \
+	--vpc-id $VPC_ID --availability-zone $SUBNET_AVAILABILITY_ZONE_PRIVATE_TWO \
+	--query 'Subnet.{SubnetId:SubnetId}' --output text`
+aws ec2 create-tags --resources $SUBNET_ID_PRIVATE_TWO \
+	--tags Key=Name,Value="$SUBNET_NAME_PRIVATE_TWO"
+
+SECURITY_GROUP_WEBSERVER_NAME="security-group-web-server"
+printf "Creating security group: $SECURITY_GROUP_WEBSERVER_NAME\n\n"
+SECURITY_GROUP_WEBSERVER_DESCRIPTION="Security Group for EC2 instance running a web server"
+SECURITY_GROUP_WEBSERVER_ID=`aws ec2 create-security-group \
+	--group-name $SECURITY_GROUP_WEBSERVER_NAME \
+	--description "$SECURITY_GROUP_WEBSERVER_DESCRIPTION" \
+	--vpc-id $VPC_ID \
+	--query 'GroupId' --output text`
+# printf "Security Group Web Server ID: $SECURITY_GROUP_WEBSERVER_ID\n\n"
+
+KEY_PAIR_NAME="key-pair-quickreg"
+KEY_PAIR_PATH="$KEY_PAIR_NAME.pem"
 printf "Creating key pair: $KEY_PAIR_NAME\n"
-aws ec2 create-key-pair --key-name $KEY_PAIR_NAME --query 'KeyMaterial' --output text > $KEY_PAIR_PATH
-chmod 400 "$KEY_PAIR_PATH"
+aws ec2 create-key-pair --key-name $KEY_PAIR_NAME --query 'KeyMaterial' --output text > $KEY_PAIR_NAME
+chmod 400 "$KEY_PAIR_NAME"
 printf "Created key pair: $KEY_PAIR_NAME at $KEY_PAIR_PATH\n\n"
 printf "Finished\n\n"
