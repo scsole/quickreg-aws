@@ -94,7 +94,9 @@ SECURITY_GROUP_WEB_SERVER_ID=`aws ec2 create-security-group \
 	--query 'GroupId' --output text`
 # printf "Security Group Web Server ID: $SECURITY_GROUP_WEB_SERVER_ID\n\n"
 SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE="security-group-web-server-permissions.json"
-aws ec2 update-security-group-rule-descriptions-ingress --group-id $SECURITY_GROUP_WEB_SERVER_ID --ip-permissions file://$SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE
+aws ec2 authorize-security-group-ingress \
+	--group-id $SECURITY_GROUP_WEB_SERVER_ID \
+	--ip-permissions file://$SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE
 KEY_PAIR_NAME="key-pair-quickreg"
 KEY_PAIR_PATH="$KEY_PAIR_NAME.pem"
 printf "Creating key pair: $KEY_PAIR_NAME\n"
