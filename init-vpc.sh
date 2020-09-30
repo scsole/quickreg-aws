@@ -82,4 +82,3 @@ aws ec2 create-key-pair --key-name $KEY_PAIR_NAME --query 'KeyMaterial' --output
 chmod 400 "$KEY_PAIR_PATH"
 printf "Created key pair: $KEY_PAIR_NAME at $KEY_PAIR_PATH\n\n"
 printf "Finished\n\n"
-
