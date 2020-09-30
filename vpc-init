@@ -39,6 +39,8 @@ aws ec2 create-tags \
     --resources $VPC_ID \
     --tags Key=Name,Value="$VPC_NAME"
 
+exit()
+
 INTERNET_GATEWAY_NAME="internet-gateway-$AVAILABILITY_ZONE-quickreg"
 printf "Creating Internet Gateway: $INTERNET_GATEWAY_NAME\n"
 INTERNET_GATEWAY_ID=`aws ec2 create-internet-gateway \

@@ -15,8 +15,7 @@ env () {
 # Initialise the Docker environment and AWS VPC
 init () {
     env #\
-        # && ./aws-init.sh
-    # TODO: Call AWS init script (should also modify Vagrantfile)
+        #&& ./vpc-init # TODO: Ensure this script works
 }
 
 # Destroy the EC2 instance
