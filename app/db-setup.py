@@ -43,30 +43,30 @@ try:
     )
 
 except mysql.connector.Error as err:
-	if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-		print("DB authentication error, skipping DB setup")
-	elif err.errno == errorcode.ER_BAD_DB_ERROR:
-		print("Database does not exist, skipping DB setup")
-	else:
-		print(err)
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print("DB authentication error, skipping DB setup")
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        print("Database does not exist, skipping DB setup")
+    else:
+        print(err)
     exit(1)
 
 try:
-	print("Creating `registrations` table", end='')
-	cursor = cnx.cursor()
-	cursor.execute(registrations_table_description)
+    print("Creating `registrations` table: ", end='')
+    cursor = cnx.cursor()
+    cursor.execute(registrations_table_description)
 except mysql.connector.Error as err:
-	print(err.msg)
+    print(err.msg)
     print("Skipping DB setup")
     cursor.close()
     cnx.close()
     exit(1)
 else:
-	print("OK")
+    print("OK")
 
 try:
-	print("Inserting sample registrations", end='')
-	cursor.execute("SELECT * FROM registrations")
+    print("Inserting sample registrations: ", end='')
+    cursor.execute("SELECT * FROM registrations")
     reg = cursor.fetchone()
     if not reg:
         cursor.execute(sample_registrations)
@@ -75,9 +75,9 @@ try:
     else:
         print("data already exists.")
 except mysql.connector.Error as err:
-	print(err.msg)
+    print(err.msg)
 else:
-    print("DB setup successful")
+    print("DB setup complete")
 
 cursor.close()
 cnx.close()
