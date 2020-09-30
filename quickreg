@@ -22,16 +22,19 @@ init () {
 # Destroy the EC2 instance
 destroy () {
     vagrant destroy
-    read -p "Also destroy the database? [y/N]: " -r
+    read -p "    Are you sure you want to destroy the RDS database? [y/N]: " -r
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then exit; fi
-    # TODO: Destroy RDS instance
+    . app/.env
+    aws rds delete-db-instance \
+        --db-instance-identifier "$DB_INSTANCE_IDENTIFIER" \
+        --skip-final-snapshot > /dev/null
+    printf "    Deleting RDS DB instance.\n"
 }
 
 # Start the EC2 and RDS instances
 up () {
     ./rds-init \
         && vagrant up --provider=aws
-        # TODO: Setup defualt DB tables
 }
 
 
