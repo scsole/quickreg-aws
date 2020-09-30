@@ -17,14 +17,39 @@ fi
 VPC_CIDR="10.0.0.0/16"
 VPC_NAME="vpc-us-east-1-quickreg"
 printf "Creating VPC: $VPC_NAME\n\n"
-VPC_ID=`aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query 'Vpc.{VpcId:VpcId}' --output text`
+VPC_ID=`aws ec2 create-vpc --cidr-block 10.0.0.0/16 \
+	--query 'Vpc.{VpcId:VpcId}' --output text`
 aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value="$VPC_NAME"
+
+printf "Creating Internet Gateway\n"
+INTERNET_GATEWAY_ID=`aws ec2 create-internet-gateway \
+	--query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' --output text`
+# echo "INTERNET GATEWAY ID: $INTERNET_GATEWAY_ID"
+printf "Attaching Internet Gateway\n\n"
+aws ec2 attach-internet-gateway --vpc-id $VPC_ID \
+	--internet-gateway-id $INTERNET_GATEWAY_ID
+
+printf "Creating Route Table"
+ROUTE_TABLE_ID=`aws ec2 create-route-table --vpc-id $VPC_ID`
+printf "Creating Route"
+ROUTE_ID=`aws ec2 create-route --route-table-id $ROUTE_TABLE_ID \
+	--destination-cidr-block 0.0.0.0/0 --gateway-id $INTERNET_GATEWAY_ID`
+
 
 
 SUBNET_NAME_PUBLIC_ONE="subnet-us-east-1-quickreg-public-1"
-printf "Creating subnet: $SUBNET_NAME_PUBLIC_ONE\n\n"
+printf "Creating subnet: $SUBNET_NAME_PUBLIC_ONE\n"
 SUBNET_CIDR_PUBLIC_ONE="10.0.0.0/24"
 SUBNET_ID_PUBLIC_ONE=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PUBLIC_ONE \
 	--vpc-id $VPC_ID --query 'Subnet.{SubnetId:SubnetId}' --output text`
-aws ec2 create-tags --resources $SUBNET_ID_PUBLIC_ONE --tags Key=Name,Value="$SUBNET_NAME_PUBLIC_ONE"
-# SUBNET_PUBLIC_TWO_NAME
+aws ec2 create-tags --resources $SUBNET_ID_PUBLIC_ONE \
+	--tags Key=Name,Value="$SUBNET_NAME_PUBLIC_ONE"
+
+
+SUBNET_NAME_PRIVATE_ONE="subnet-us-east-1-quickreg-private-1"
+printf "Creating subnet: $SUBNET_NAME_PRIVATE_ONE\n\n"
+SUBNET_CIDR_PRIVATE_ONE="10.0.1.0/24"
+SUBNET_ID_PRIVATE_ONE=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PRIVATE_ONE \
+	--vpc-id $VPC_ID --query 'Subnet.{SubnetId:SubnetId}' --output text`
+aws ec2 create-tags --resources $SUBNET_ID_PRIVATE_ONE \
+	--tags Key=Name,Value="$SUBNET_NAME_PRIVATE_ONE"
