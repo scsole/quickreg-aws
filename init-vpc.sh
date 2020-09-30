@@ -97,10 +97,25 @@ SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE="security-group-web-server-permission
 aws ec2 authorize-security-group-ingress \
 	--group-id $SECURITY_GROUP_WEB_SERVER_ID \
 	--ip-permissions file://$SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE
+
+SECURITY_GROUP_DB_NAME="security-group-db-server"
+printf "Creating security group: $SECURITY_GROUP_DB_NAME\n\n"
+SECURITY_GROUP_DB_DESCRIPTION="Security Group for RDS running MySQL"
+SECURITY_GROUP_DB_ID=`aws ec2 create-security-group \
+	--group-name $SECURITY_GROUP_DB_NAME \
+	--description "$SECURITY_GROUP_DB_DESCRIPTION" \
+	--vpc-id $VPC_ID \
+	--query 'GroupId' --output text`
+# TODO make DB only accept connections from the EC2 instance
+SECURITY_GROUP_DB_PERMISSIONS_FILE="security-group-db-server-permissions.json"
+aws ec2 authorize-security-group-ingress \
+	--group-id $SECURITY_GROUP_DB_ID \
+	--ip-permissions file://$SECURITY_GROUP_DB_PERMISSIONS_FILE
+
 KEY_PAIR_NAME="key-pair-quickreg"
 KEY_PAIR_PATH="$KEY_PAIR_NAME.pem"
 printf "Creating key pair: $KEY_PAIR_NAME\n"
-aws ec2 create-key-pair --key-name $KEY_PAIR_NAME --query 'KeyMaterial' --output text > $KEY_PAIR_NAME
-chmod 400 "$KEY_PAIR_NAME"
+aws ec2 create-key-pair --key-name $KEY_PAIR_NAME --query 'KeyMaterial' --output text > $KEY_PAIR_PATH
+chmod 400 "$KEY_PAIR_PATH"
 printf "Created key pair: $KEY_PAIR_NAME at $KEY_PAIR_PATH\n\n"
 printf "Finished\n\n"
