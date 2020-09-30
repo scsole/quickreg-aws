@@ -8,21 +8,15 @@
 # - jq
 
 # Database settings
-DB_INSTANCE_IDENTIFIER=quickreg-db-instance-test
+. app/.env
 DB_INSTANCE_CLASS=db.t2.micro
 DB_ALLOCATED_STORAGE=20
 DB_ENGINE=mysql
 DB_PORT=3306
 
-source app/.env
-
 DB_NAME=$MYSQL_DATABASE
 MASTER_USERNAME=$MYSQL_USER
 MASTER_PASSWORD=$MYSQL_PASSWORD
-
-# TODO: Get/Set VPC security group (ensure subnet group name is correct)
-VPC_DB_SECURITY_GROUP=sg-098bb06b5958e6dab # (quickreg-db-sg) should have private access
-DB_SUBNET_GROUP=quickreg-db-subnet-group
 
 printf "Creating Amazon RDS for MySQL DB instance\n"
 
@@ -37,19 +31,25 @@ aws rds create-db-instance \
     --vpc-security-group-ids $VPC_DB_SECURITY_GROUP \
     --db-subnet-group-name $DB_SUBNET_GROUP \
     --no-publicly-accessible \
-    --port $DB_PORT
+    --port $DB_PORT > /dev/null
 
-printf "Waiting for DB instance to become available, this could take a while..."
+printf "Waiting for DB instance to become available, this could take a while.\n"
 
-db_status=$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')
-while [ $db_status != 'available' ] ; do
-    printf "." 
+last_status=""
+db_status="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')"
+while [ "$db_status" != "available" ] ; do
+    if [[ $last_status != $db_status ]]; then
+        printf "\n$db_status"
+        last_status=$db_status
+    else
+        printf "." 
+    fi
     sleep 10
-    $db_status=$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')
+    db_status="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')"
 done
 
-printf "\nSuccessfully created DB instance\n"
+printf "\n\nSuccessfully created DB instance\n"
 printf "Adding RDS endpoint address to app/.env\n"
 
-RDS_ENDPOINT_ADDR=$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].Endpoint.Address')
+RDS_ENDPOINT_ADDR="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].Endpoint.Address')"
 sed -i 's/^RDS_ENDPOINT=.*$/RDS_ENDPOINT='"$RDS_ENDPOINT_ADDR"'/' app/.env
