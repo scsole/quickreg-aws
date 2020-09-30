@@ -24,17 +24,6 @@ aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value="$VPC_NAME"
 printf "Creating Internet Gateway\n"
 INTERNET_GATEWAY_ID=`aws ec2 create-internet-gateway \
 	--query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' --output text`
-# echo "INTERNET GATEWAY ID: $INTERNET_GATEWAY_ID"
-printf "Attaching Internet Gateway\n\n"
-aws ec2 attach-internet-gateway --vpc-id $VPC_ID \
-	--internet-gateway-id $INTERNET_GATEWAY_ID
-
-printf "Creating Route Table"
-ROUTE_TABLE_ID=`aws ec2 create-route-table --vpc-id $VPC_ID`
-printf "Creating Route"
-ROUTE_ID=`aws ec2 create-route --route-table-id $ROUTE_TABLE_ID \
-	--destination-cidr-block 0.0.0.0/0 --gateway-id $INTERNET_GATEWAY_ID`
-
 
 
 SUBNET_NAME_PUBLIC_ONE="subnet-us-east-1-quickreg-public-1"
