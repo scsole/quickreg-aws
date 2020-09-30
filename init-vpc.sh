@@ -24,6 +24,9 @@ aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value="$VPC_NAME"
 printf "Creating Internet Gateway\n"
 INTERNET_GATEWAY_ID=`aws ec2 create-internet-gateway \
 	--query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' --output text`
+INTERNET_GATEWAY_NAME="internet-gateway-us-east-1-quickreg"
+aws ec2 create-tags --resources $INTERNET_GATEWAY_ID \
+	--tags Key=Name,Value="$INTERNET_GATEWAY_NAME"
 printf "Attaching Internet Gateway\n\n"
 aws ec2 attach-internet-gateway --vpc-id $VPC_ID \
 	--internet-gateway-id $INTERNET_GATEWAY_ID
@@ -31,6 +34,9 @@ aws ec2 attach-internet-gateway --vpc-id $VPC_ID \
 printf "Creating Route Table\n"
 ROUTE_TABLE_ID=`aws ec2 create-route-table --vpc-id $VPC_ID \
 	--query 'RouteTable.{RouteTableId:RouteTableId}' --output text`
+ROUTE_TABLE_NAME="route-table-us-east-1-quickreg"
+aws ec2 create-tags --resources $ROUTE_TABLE_ID \
+	--tags Key=Name,Value="$ROUTE_TABLE_NAME"
 printf "Creating Route\n\n"
 ANYWHERE="0.0.0.0/0"
 aws ec2 create-route --route-table-id $ROUTE_TABLE_ID \
@@ -48,7 +54,7 @@ aws ec2 create-tags --resources $SUBNET_ID_PUBLIC_ONE \
 printf "Making subnet: $SUBNET_NAME_PUBLIC_ONE publicly accessible\n"
 aws ec2 associate-route-table \
 	--route-table-id $ROUTE_TABLE_ID \
-	--subnet-id $SUBNET_ID_PUBLIC_ONE
+	--subnet-id $SUBNET_ID_PUBLIC_ONE > /dev/null
 
 aws ec2 modify-subnet-attribute \
 	--subnet-id $SUBNET_ID_PUBLIC_ONE \
