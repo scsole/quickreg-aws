@@ -1,0 +1,55 @@
+#!/bin/bash
+
+#
+# Create an Amazon RDS for MySQL DB instance
+#
+# Dependancys:
+# - aws
+# - jq
+
+# Database settings
+. app/.env
+DB_INSTANCE_CLASS=db.t2.micro
+DB_ALLOCATED_STORAGE=20
+DB_ENGINE=mysql
+DB_PORT=3306
+
+DB_NAME=$MYSQL_DATABASE
+MASTER_USERNAME=$MYSQL_USER
+MASTER_PASSWORD=$MYSQL_PASSWORD
+
+printf "Creating Amazon RDS for MySQL DB instance\n"
+
+aws rds create-db-instance \
+    --db-instance-identifier $DB_INSTANCE_IDENTIFIER \
+    --db-instance-class $DB_INSTANCE_CLASS \
+    --allocated-storage $DB_ALLOCATED_STORAGE \
+    --engine $DB_ENGINE \
+    --db-name $DB_NAME \
+    --master-username $MASTER_USERNAME \
+    --master-user-password $MASTER_PASSWORD \
+    --vpc-security-group-ids $VPC_DB_SECURITY_GROUP \
+    --db-subnet-group-name $DB_SUBNET_GROUP \
+    --no-publicly-accessible \
+    --port $DB_PORT > /dev/null
+
+printf "Waiting for DB instance to become available, this could take a while.\n"
+
+last_status=""
+db_status="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')"
+while [ "$db_status" != "available" ] ; do
+    if [[ $last_status != $db_status ]]; then
+        printf "\n$db_status"
+        last_status=$db_status
+    else
+        printf "." 
+    fi
+    sleep 10
+    db_status="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')"
+done
+
+printf "\n\nSuccessfully created DB instance\n"
+printf "Adding RDS endpoint address to app/.env\n"
+
+RDS_ENDPOINT_ADDR="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].Endpoint.Address')"
+sed -i 's/^RDS_ENDPOINT=.*$/RDS_ENDPOINT='"$RDS_ENDPOINT_ADDR"'/' app/.env

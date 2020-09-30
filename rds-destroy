@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#
+# Destroy an Amazon RDS for MySQL DB instance
+#
+# Dependancys:
+# - aws
+
+# Database settings
+. app/.env
+
+aws rds delete-db-instance \
+    --db-instance-identifier "$DB_INSTANCE_IDENTIFIER" \
+    --skip-final-snapshot > /dev/null
+
+printf "    Deleting RDS DB instance.\n"
