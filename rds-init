@@ -1,0 +1,60 @@
+#!/bin/bash
+
+#
+# Create an Amazon RDS for MySQL DB instance
+#
+# Dependancys:
+# - aws
+# - jq
+
+# Database settings
+DB_INSTANCE_IDENTIFIER=quickreg-db-instance
+DB_INSTANCE_CLASS=db.t2.micro
+DB_ALLOCATED_STORAGE=20
+DB_ENGINE=mysql
+DB_PORT=3306
+
+# TODO: Pull defaults form app/.env
+DB_NAME=quickreg
+MASTER_USERNAME=webuser
+MASTER_PASSWORD=webuser_pw 
+
+# TODO: Get/Set VPC security group (ensure subnet group name is correct)
+VPC_DB_SECURITY_GROUP=sg-098bb06b5958e6dab # (quickreg-db-sg) should have private access
+DB_SUBNET_GROUP=quickreg-db-subnet-group
+
+aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER 2> /dev/null
+if [ $? -eq 0 ]; then
+    printf "RDS instance already exists, skipping DB setup\n"
+    exit
+fi
+
+printf "Creating Amazon RDS for MySQL DB instance\n"
+
+aws rds create-db-instance \
+    --db-instance-identifier $DB_INSTANCE_IDENTIFIER \
+    --db-instance-class $DB_INSTANCE_CLASS \
+    --allocated-storage $DB_ALLOCATED_STORAGE \
+    --engine $DB_ENGINE \
+    --db-name $DB_NAME \
+    --master-username $MASTER_USERNAME \
+    --master-user-password $MASTER_PASSWORD \
+    --vpc-security-group-ids $VPC_DB_SECURITY_GROUP \
+    --db-subnet-group-name $DB_SUBNET_GROUP \
+    --no-publicly-accessible \
+    --port $DB_PORT
+
+printf "Waiting for DB instance to become available, this could take a while..."
+
+db_status=$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')
+while [ $db_status != 'available' ] ; do
+    printf "." 
+    sleep 10
+    $db_status=$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].DBInstanceStatus')
+done
+
+printf "\nSuccessfully created DB instance\n"
+printf "Adding RDS endpoint address to app/.env\n"
+
+RDS_ENDPOINT=$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].Endpoint.Address')
+sed -i 's/^RDS_ENDPOINT=.*$/RDS_ENDPOINT='"$RDS_ENDPOINT"'/' app/.env

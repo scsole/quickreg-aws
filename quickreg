@@ -27,10 +27,11 @@ destroy () {
     # TODO: Destroy RDS instance
 }
 
-# Start the EC2 instance
+# Start the EC2 and RDS instances
 up () {
-    vagrant up --provider=aws
-    # TODO: Create RDS instance
+    ./rds-init \
+        && vagrant up --provider=aws
+        # TODO: Setup defualt DB tables
 }
 
 
