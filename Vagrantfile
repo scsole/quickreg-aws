@@ -86,10 +86,12 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y docker docker-compose
+    apt-get install -y docker docker-compose python3-pip
     systemctl enable --now docker.service
     usermod -aG docker ubuntu
     cd /vagrant
+    python3 -m pip install python-dotenv mysql-connector-python
+    python3 provision-db.py
     docker-compose up -d
   SHELL
 end
