@@ -84,16 +84,17 @@ SUBNET_ID_PRIVATE_TWO=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PRIVATE_T
 aws ec2 create-tags --resources $SUBNET_ID_PRIVATE_TWO \
 	--tags Key=Name,Value="$SUBNET_NAME_PRIVATE_TWO"
 
-SECURITY_GROUP_WEBSERVER_NAME="security-group-web-server"
-printf "Creating security group: $SECURITY_GROUP_WEBSERVER_NAME\n\n"
-SECURITY_GROUP_WEBSERVER_DESCRIPTION="Security Group for EC2 instance running a web server"
-SECURITY_GROUP_WEBSERVER_ID=`aws ec2 create-security-group \
-	--group-name $SECURITY_GROUP_WEBSERVER_NAME \
-	--description "$SECURITY_GROUP_WEBSERVER_DESCRIPTION" \
+SECURITY_GROUP_WEB_SERVER_NAME="security-group-web-server"
+printf "Creating security group: $SECURITY_GROUP_WEB_SERVER_NAME\n\n"
+SECURITY_GROUP_WEB_SERVER_DESCRIPTION="Security Group for EC2 instance running a web server"
+SECURITY_GROUP_WEB_SERVER_ID=`aws ec2 create-security-group \
+	--group-name $SECURITY_GROUP_WEB_SERVER_NAME \
+	--description "$SECURITY_GROUP_WEB_SERVER_DESCRIPTION" \
 	--vpc-id $VPC_ID \
 	--query 'GroupId' --output text`
-# printf "Security Group Web Server ID: $SECURITY_GROUP_WEBSERVER_ID\n\n"
-
+# printf "Security Group Web Server ID: $SECURITY_GROUP_WEB_SERVER_ID\n\n"
+SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE="security-group-web-server-permissions.json"
+aws ec2 update-security-group-rule-descriptions-ingress --group-id $SECURITY_GROUP_WEB_SERVER_ID --ip-permissions file://$SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE
 KEY_PAIR_NAME="key-pair-quickreg"
 KEY_PAIR_PATH="$KEY_PAIR_NAME.pem"
 printf "Creating key pair: $KEY_PAIR_NAME\n"
