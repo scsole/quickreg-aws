@@ -28,12 +28,13 @@ printf "Attaching Internet Gateway\n\n"
 aws ec2 attach-internet-gateway --vpc-id $VPC_ID \
 	--internet-gateway-id $INTERNET_GATEWAY_ID
 
-printf "Creating Route Table"
-ROUTE_TABLE_ID=`aws ec2 create-route-table --vpc-id $VPC_ID`
-printf "Creating Route"
-ROUTE_ID=`aws ec2 create-route --route-table-id $ROUTE_TABLE_ID \
-	--destination-cidr-block 0.0.0.0/0 --gateway-id $INTERNET_GATEWAY_ID`
-
+printf "Creating Route Table\n"
+ROUTE_TABLE_ID=`aws ec2 create-route-table --vpc-id $VPC_ID \
+	--query 'RouteTable.{RouteTableId:RouteTableId}' --output text`
+printf "Creating Route\n\n"
+ANYWHERE="0.0.0.0/0"
+aws ec2 create-route --route-table-id $ROUTE_TABLE_ID \
+	--destination-cidr-block $ANYWHERE --gateway-id $INTERNET_GATEWAY_ID > /dev/null
 
 
 SUBNET_NAME_PUBLIC_ONE="subnet-us-east-1-quickreg-public-1"
@@ -43,6 +44,15 @@ SUBNET_ID_PUBLIC_ONE=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PUBLIC_ONE
 	--vpc-id $VPC_ID --query 'Subnet.{SubnetId:SubnetId}' --output text`
 aws ec2 create-tags --resources $SUBNET_ID_PUBLIC_ONE \
 	--tags Key=Name,Value="$SUBNET_NAME_PUBLIC_ONE"
+
+printf "Making subnet: $SUBNET_NAME_PUBLIC_ONE publicly accessible\n"
+aws ec2 associate-route-table \
+	--route-table-id $ROUTE_TABLE_ID \
+	--subnet-id $SUBNET_ID_PUBLIC_ONE
+
+aws ec2 modify-subnet-attribute \
+	--subnet-id $SUBNET_ID_PUBLIC_ONE \
+	--map-public-ip-on-launch
 
 
 SUBNET_NAME_PRIVATE_ONE="subnet-us-east-1-quickreg-private-1"
