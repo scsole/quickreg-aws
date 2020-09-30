@@ -21,9 +21,9 @@ init () {
 
 # Destroy the EC2 instance
 destroy () {
-    read -p "This will remove the EC2 instance, docker containers and volumes. Are you sure? [y/N]: " -r
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then exit; fi
     vagrant destroy
+    read -p "Also destroy the database? [y/N]: " -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then exit; fi
     # TODO: Destroy RDS instance
 }
 
