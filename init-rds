@@ -52,4 +52,4 @@ printf "\n\nSuccessfully created DB instance\n"
 printf "Adding RDS endpoint address to app/.env\n"
 
 RDS_ENDPOINT_ADDR="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].Endpoint.Address')"
-sed -i 's/^RDS_ENDPOINT=.*$/'"$RDS_ENDPOINT_ADDR"'/' app/.env
+sed -i 's/^RDS_ENDPOINT=.*$/RDS_ENDPOINT='"$RDS_ENDPOINT_ADDR"'/' app/.env
