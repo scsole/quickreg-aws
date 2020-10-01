@@ -45,28 +45,19 @@ Vagrant.configure("2") do |config|
         rsync__exclude: ".git/"
 
     # The name of the EC2 keypair as set in Amazon.
-    aws.keypair_name = "quickreg" ### TODO: Autofill
+    aws.keypair_name = "quickreg-kp"
     # The path to the private key on the local machine.
-    override.ssh.private_key_path = "~/.ssh/quickreg.pem" ### TODO: Autofill
+    override.ssh.private_key_path = "~/.ssh/quickreg-kp.pem"
 
     # Use a cheap t2.micro EC2 instance type.
     aws.instance_type = "t2.micro"
 
-    # You need to indicate the list of security groups your VM should
-    # be in. Each security group will be of the form "sg-...", and
-    # they should be comma-separated (if you use more than one) within
-    # square brackets.
-    #
-    # ssh-access, web-access
-    aws.security_groups = ["sg-0c8178950ff70a3de"] ### TODO: Autofill
+    # The 'Public Web Server" security group
+    aws.security_groups = ["sg-..."]
 
-    # For Vagrant to deploy to EC2 for Amazon Educate accounts, it
-    # seems that a specific availability_zone needs to be selected
-    # (will be of the form "us-east-1a"). The subnet_id for that
-    # availability_zone needs to be included, too (will be of the form
-    # "subnet-...").
-    aws.availability_zone = "us-east-1d"
-    aws.subnet_id = "subnet-0392c0b81aaddc28b" ### TODO: Autofill
+    # The subnet_id and availability zone for the public subnet
+    aws.availability_zone = "us-east-1a"
+    aws.subnet_id = "subnet-..."
 
     # Associate a public IP address to an instance in a VPC
     aws.associate_public_ip = true
@@ -81,9 +72,8 @@ Vagrant.configure("2") do |config|
     override.ssh.username = "ubuntu"
   end
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
-  # documentation for more information about their specific syntax and use.
+  # Provisioning shell script. Sets up docker environment, creates tables in
+  # Amazon RDS DB instance, and brings up all containers.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y docker docker-compose python3-pip

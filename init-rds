@@ -28,7 +28,7 @@ aws rds create-db-instance \
     --db-name $DB_NAME \
     --master-username $MASTER_USERNAME \
     --master-user-password $MASTER_PASSWORD \
-    --vpc-security-group-ids $VPC_DB_SECURITY_GROUP \
+    --vpc-security-group-ids $DB_SECURITY_GROUP \
     --db-subnet-group-name $DB_SUBNET_GROUP \
     --no-publicly-accessible \
     --port $DB_PORT > /dev/null

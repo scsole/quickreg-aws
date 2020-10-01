@@ -13,6 +13,11 @@ Requires `aws`, `jq`, `vagrant`, and the Vagrant AWS plug-in.
 5. Browse to the instance's public DNS address via port `8080` for the
 phpMyAdmin console. The default `webuser` password is `webuser_pw`
 
+> **WARNING**: The `quickreg init` script does not handle existing
+configurations very gracefully. If, for example, a security group with a
+common name already exists, the init script will fail to complete
+successfully.
+
 <details>
 <summary>How to install the Vagrant AWS plugin</summary>
 
