@@ -4,6 +4,7 @@ services:
 
   nginx:
     image: nginx:1.19-alpine
+    restart: always
     ports:
       - 80:80
       - 8080:8080
@@ -17,6 +18,7 @@ services:
 
   php:
     build: ./.docker/php
+    restart: always
     environment:
       - DB_HOST=${RDS_ENDPOINT}
       - DB_USER=${MYSQL_USER}
@@ -28,6 +30,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5-fpm-alpine
+    restart: always
     environment:
       - PMA_HOST=${RDS_ENDPOINT}
     volumes:
