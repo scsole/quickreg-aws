@@ -45,9 +45,9 @@ Vagrant.configure("2") do |config|
         rsync__exclude: ".git/"
 
     # The name of the EC2 keypair as set in Amazon.
-    aws.keypair_name = "quickreg" ### TODO: Autofill
+    aws.keypair_name = "quickreg-kp"
     # The path to the private key on the local machine.
-    override.ssh.private_key_path = "~/.ssh/quickreg.pem" ### TODO: Autofill
+    override.ssh.private_key_path = "~/.ssh/quickreg-kp.pem"
 
     # Use a cheap t2.micro EC2 instance type.
     aws.instance_type = "t2.micro"

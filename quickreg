@@ -12,10 +12,10 @@ env () {
     fi
 }
 
-# Initialise the Docker environment and AWS VPC
+# Initialise the Docker environment and configure AWS
 init () {
-    env #\
-        #&& ./vpc-init # TODO: Ensure this script works
+    env \
+        && ./vpc-init
 }
 
 # Destroy the EC2 instance
@@ -56,7 +56,7 @@ Usage:
     quickreg <command>
 
 Available commands:
-    init ...................................... Configure an AWS VPC and docker enviornment
+    init ...................................... Configure the docker enviornment and generate an EC2 key pair
     up ........................................ Start an EC2 and RDS instance along with docker containers
     destroy ................................... Stop the EC2 instance along with the docker containers
 
