@@ -52,21 +52,12 @@ Vagrant.configure("2") do |config|
     # Use a cheap t2.micro EC2 instance type.
     aws.instance_type = "t2.micro"
 
-    # You need to indicate the list of security groups your VM should
-    # be in. Each security group will be of the form "sg-...", and
-    # they should be comma-separated (if you use more than one) within
-    # square brackets.
-    #
-    # ssh-access, web-access
-    aws.security_groups = ["sg-0c8178950ff70a3de"] ### TODO: Autofill
+    # TODO: Enter the 'Public Web Server" security group (quickreg-securitygroup)
+    aws.security_groups = ["sg-073266b73acd92fe5"]
 
-    # For Vagrant to deploy to EC2 for Amazon Educate accounts, it
-    # seems that a specific availability_zone needs to be selected
-    # (will be of the form "us-east-1a"). The subnet_id for that
-    # availability_zone needs to be included, too (will be of the form
-    # "subnet-...").
-    aws.availability_zone = "us-east-1d"
-    aws.subnet_id = "subnet-0392c0b81aaddc28b" ### TODO: Autofill
+    # TODO: Ensure the subnet_id and availability zone matches the public subnet
+    aws.availability_zone = "us-east-1a"
+    aws.subnet_id = "subnet-07fbc11d04e4e38d6"
 
     # Associate a public IP address to an instance in a VPC
     aws.associate_public_ip = true

@@ -19,33 +19,32 @@ createKeyPair () {
 
     if [ -f "$PRIVATE_KEY_PATH" ]; then
         read -p "${PRIVATE_KEY_PATH} already exists. Do you want to overwrite it? [y/N]: " -r 
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then exit; fi
-    fi
-
-    printf "Creating key pair: "
-    aws ec2 create-key-pair \
-        --key-name "$KEY_PAIR_NAME" \
-        --query 'KeyMaterial' \
-        --output text > "$PRIVATE_KEY_PATH"
-    if [[ $? -ne 0 ]]; then
-        printf "Please check that ${PRIVATE_KEY_PATH} contains a valid private key.\n"
-        exit
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            printf "Skipping key pair generation\n\n"
+        fi
     else
-        chmod 600 "$PRIVATE_KEY_PATH"
-        printf "OK\n"
+        printf "Creating key pair: "
+        aws ec2 create-key-pair \
+            --key-name "$KEY_PAIR_NAME" \
+            --query 'KeyMaterial' \
+            --output text > "$PRIVATE_KEY_PATH"
+        if [[ $? -ne 0 ]]; then
+            printf "Please check that ${PRIVATE_KEY_PATH} contains a valid private key.\n"
+            exit
+        else
+            chmod 600 "$PRIVATE_KEY_PATH"
+            printf "OK\n"
+        fi
+        printf "Created key pair: $KEY_PAIR_NAME\n"
     fi
-    printf "Created key pair: $KEY_PAIR_NAME\n"
 }
 
 
 initVPC () {
-    exit 1
     #
     # Create a VPC with Private and Public Subnets
     #
-    # Is function is incomplete or does not fully setup required subnets. This
-    # process needs to be completed manually using the AWS console.
-    # Instructions can be found at:
+    # Based off the guide found at:
     #
     # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateVPC.html
     #
@@ -60,13 +59,11 @@ initVPC () {
         --query 'Vpc.{VpcId:VpcId}' \
         --output text`
 
-    echo $VPC_ID
-
     aws ec2 create-tags \
         --resources $VPC_ID \
         --tags Key=Name,Value="$VPC_NAME"
 
-    # TODO: Fix code
+    # TODO: Massive cleanup
     INTERNET_GATEWAY_NAME="internet-gateway-$AVAILABILITY_ZONE-quickreg"
     printf "Creating Internet Gateway: $INTERNET_GATEWAY_NAME\n"
     INTERNET_GATEWAY_ID=`aws ec2 create-internet-gateway \
@@ -92,7 +89,6 @@ initVPC () {
     SUBNET_NAME_PUBLIC_ONE="subnet-$AVAILABILITY_ZONE-quickreg-public-1"
     printf "Creating subnet: $SUBNET_NAME_PUBLIC_ONE\n"
     SUBNET_CIDR_PUBLIC_ONE="10.0.0.0/24"
-    # TODO Find method of concatenating strings that is easier to read
     SUBNET_AVAILABILITY_ZONE_PUBLIC_ONE="${AVAILABILITY_ZONE}a"
     SUBNET_ID_PUBLIC_ONE=`aws ec2 create-subnet --cidr-block $SUBNET_CIDR_PUBLIC_ONE \
         --vpc-id $VPC_ID --availability-zone $SUBNET_AVAILABILITY_ZONE_PUBLIC_ONE \
@@ -173,4 +169,4 @@ initVPC () {
 #
 verifyCredentials 
 createKeyPair
-# initVPC
+initVPC
