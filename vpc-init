@@ -59,6 +59,10 @@ initVPC () {
         --query 'Vpc.{VpcId:VpcId}' \
         --output text`
 
+    aws ec2 modify-vpc-attribute \
+        --enable-dns-hostnames \
+        --vpc-id "$VPC_ID"
+
     aws ec2 create-tags \
         --resources $VPC_ID \
         --tags Key=Name,Value="$VPC_NAME"
