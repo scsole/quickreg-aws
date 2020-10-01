@@ -139,7 +139,7 @@ initVPC () {
         --vpc-id $VPC_ID \
         --query 'GroupId' --output text`
     
-    sed -i 's/aws.security_groups =.*$/aws.security_groups = ["'"${SECURITY_GROUP_WEB_SERVIER_ID}"'"]/' Vagrantfile
+    sed -i 's/aws.security_groups =.*$/aws.security_groups = ["'"${SECURITY_GROUP_WEB_SERVER_ID}"'"]/' Vagrantfile
     SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE="security-group-web-server-permissions.json"
     aws ec2 authorize-security-group-ingress \
         --group-id $SECURITY_GROUP_WEB_SERVER_ID \
