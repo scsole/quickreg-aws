@@ -52,12 +52,12 @@ Vagrant.configure("2") do |config|
     # Use a cheap t2.micro EC2 instance type.
     aws.instance_type = "t2.micro"
 
-    # TODO: Enter the 'Public Web Server" security group (quickreg-securitygroup)
-    aws.security_groups = ["sg-073266b73acd92fe5"]
+    # The 'Public Web Server" security group
+    aws.security_groups = ["sg-..."]
 
-    # TODO: Ensure the subnet_id and availability zone matches the public subnet
+    # The subnet_id and availability zone for the public subnet
     aws.availability_zone = "us-east-1a"
-    aws.subnet_id = "subnet-07fbc11d04e4e38d6"
+    aws.subnet_id = "subnet-..."
 
     # Associate a public IP address to an instance in a VPC
     aws.associate_public_ip = true
@@ -72,9 +72,8 @@ Vagrant.configure("2") do |config|
     override.ssh.username = "ubuntu"
   end
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
-  # documentation for more information about their specific syntax and use.
+  # Provisioning shell script. Sets up docker environment, creates tables in
+  # Amazon RDS DB instance, and brings up all containers.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y docker docker-compose python3-pip

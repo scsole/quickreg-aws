@@ -28,7 +28,7 @@ aws rds create-db-instance \
     --db-name $DB_NAME \
     --master-username $MASTER_USERNAME \
     --master-user-password $MASTER_PASSWORD \
-    --vpc-security-group-ids $VPC_DB_SECURITY_GROUP \
+    --vpc-security-group-ids $DB_SECURITY_GROUP \
     --db-subnet-group-name $DB_SUBNET_GROUP \
     --no-publicly-accessible \
     --port $DB_PORT > /dev/null
@@ -52,4 +52,4 @@ printf "\n\nSuccessfully created DB instance\n"
 printf "Adding RDS endpoint address to app/.env\n"
 
 RDS_ENDPOINT_ADDR="$(aws rds describe-db-instances --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r '.DBInstances[0].Endpoint.Address')"
-sed -i 's/^RDS_ENDPOINT=.*$/RDS_ENDPOINT='"$RDS_ENDPOINT_ADDR"'/' app/.env
+sed -i 's/^RDS_ENDPOINT=.*$/'"$RDS_ENDPOINT_ADDR"'/' app/.env

@@ -138,7 +138,8 @@ initVPC () {
         --description "$SECURITY_GROUP_WEB_SERVER_DESCRIPTION" \
         --vpc-id $VPC_ID \
         --query 'GroupId' --output text`
-    # printf "Security Group Web Server ID: $SECURITY_GROUP_WEB_SERVER_ID\n\n"
+    
+    sed -i 's/aws.security_groups =.*$/aws.security_groups = ["'"${SECURITY_GROUP_WEB_SERVIER_ID}"'"]/' Vagrantfile
     SECURITY_GROUP_WEB_SERVER_PERMISSIONS_FILE="security-group-web-server-permissions.json"
     aws ec2 authorize-security-group-ingress \
         --group-id $SECURITY_GROUP_WEB_SERVER_ID \
@@ -147,29 +148,37 @@ initVPC () {
     SECURITY_GROUP_DB_NAME="security-group-db-server-quickreg"
     printf "Creating security group: $SECURITY_GROUP_DB_NAME\n\n"
     SECURITY_GROUP_DB_DESCRIPTION="Security Group for RDS running MySQL"
-    # TODO Investigate aws create-db-security-group
     SECURITY_GROUP_DB_ID=`aws ec2 create-security-group \
         --group-name $SECURITY_GROUP_DB_NAME \
         --description "$SECURITY_GROUP_DB_DESCRIPTION" \
         --vpc-id $VPC_ID \
         --query 'GroupId' --output text`
-    # TODO make DB only accept connections from the EC2 instance
+    sed -i 's/^DB_SECURITY_GROUP=.*$/DB_SECURITY_GROUP='"$SECURITY_GROUP_DB_ID"'/' app/.env
     SECURITY_GROUP_DB_PERMISSIONS_FILE="security-group-db-server-permissions.json"
     aws ec2 authorize-security-group-ingress \
         --group-id $SECURITY_GROUP_DB_ID \
         --ip-permissions file://$SECURITY_GROUP_DB_PERMISSIONS_FILE
     SUBNET_NAME_DB="subnet-db-quickreg"
+    sed -i 's/^DB_SUBNET_GROUP=.*$/DB_SUBNET_GROUP='"$SUBNET_NAME_DB"'/' app/.env
     SUBNET_DESCRIPTION_DB="Subnet group for MySQL database"
     printf "Creating DB Subnet group: $SUBNET_NAME_DB\n\n"
     aws rds create-db-subnet-group \
         --db-subnet-group-name $SUBNET_NAME_DB \
         --db-subnet-group-description "Subnet group for MySQL database" \
         --subnet-ids "[\"$SUBNET_ID_PUBLIC_ONE\",\"$SUBNET_ID_PRIVATE_ONE\",\"$SUBNET_ID_PRIVATE_TWO\"]"
+
+    # Update the subnet_id in Vagrantfile, NB: The AVAILABILITY_ZONE_SUBNET_ID may exist in an earlier variable
+    sed -i 's/aws.availability_zone =.*$/aws.availability_zone = "'"$SUBNET_AVAILABILITY_ZONE_PUBLIC_ONE"'"/' Vagrantfile
+    AVAILABILITY_ZONE_SUBNET_ID=`aws ec2 describe-subnets \
+        --filters Name=tag:Name,Values="$SUBNET_NAME_PUBLIC_ONE" \
+        --query 'Subnets[].SubnetId' \
+        --output text`
+    sed -i 's/aws.subnet_id =.*$/aws.subnet_id = "'"$AVAILABILITY_ZONE_SUBNET_ID"'"/' Vagrantfile
 }
 
 
 #
-# Perform setup
+# Perform AWS setup
 #
 verifyCredentials 
 createKeyPair
