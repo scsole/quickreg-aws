@@ -5,7 +5,7 @@ A simple solution to quickly collect registrations for an event.
 ## Deploy via AWS quick start
 
 Requires `aws`, `jq`, `vagrant`, and the Vagrant AWS plug-in.
-
+**NOTE:** The quickreg script has only been tested on Arch Linux and Pop!_OS 20.04 LTS
 1. Ensure the AWS-CLI has been configured with: `aws configure`
 2. Run `./quickreg init`
 3. Run `./quickreg start`
