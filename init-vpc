@@ -158,6 +158,9 @@ initVPC () {
     aws ec2 authorize-security-group-ingress \
         --group-id $SECURITY_GROUP_DB_ID \
         --ip-permissions file://$SECURITY_GROUP_DB_PERMISSIONS_FILE
+	aws ec2 revoke-security-group-egress \
+	--group-id $SECURITY_GROUP_DB_ID \
+	--ip-permissions '[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}]'
     SUBNET_NAME_DB="quickreg-subnet-db"
     sed -i 's/^DB_SUBNET_GROUP=.*$/DB_SUBNET_GROUP='"$SUBNET_NAME_DB"'/' app/.env
     SUBNET_DESCRIPTION_DB="Subnet group for MySQL database"
